@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
-@Table(name = "attendance")
 @Entity
+@Table(name = "attendance")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,8 +25,15 @@ public class Attendance {
     private Employee employee;
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(name = "work_date", nullable = false)
+    private LocalDate workDate;
+
+    @Column(name = "check_in")
     private LocalDateTime checkInTime;
 
+    @Column(name = "check_out")
     private LocalDateTime checkOutTime;
+
+    @Column(name = "total_hours")
+    private Double totalHours;
 }

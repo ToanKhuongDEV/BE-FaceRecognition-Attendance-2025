@@ -1,17 +1,15 @@
 package com.example.befacerecognitionattendance2025.domain.entity;
 
-
 import com.example.befacerecognitionattendance2025.constant.Gender;
 import com.example.befacerecognitionattendance2025.constant.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 import java.time.LocalDate;
 import java.util.List;
 
-@Table(name = "employee")
 @Entity
+@Table(name = "employees")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,9 +33,6 @@ public class Employee {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -45,19 +40,14 @@ public class Employee {
     @Column(nullable = false)
     private Role role;
 
-    @Column(name = "date_birth")
     private LocalDate dateBirth;
-
-    @Column(name = "email", unique = true)
+    private String phoneNumber;
     private String email;
-
-    @Column(name = "image_url")
     private String avatar;
 
-    @Column(length = 1000)
-    private String faceId;
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FaceData> faceDataList;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendance> attendances;
 }
-
