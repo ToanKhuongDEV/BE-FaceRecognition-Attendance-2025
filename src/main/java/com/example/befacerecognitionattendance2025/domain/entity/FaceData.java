@@ -2,6 +2,7 @@ package com.example.befacerecognitionattendance2025.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -26,6 +27,7 @@ public class FaceData {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String faceTemplate;
 
-    @Column(name = "created_at")
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 }

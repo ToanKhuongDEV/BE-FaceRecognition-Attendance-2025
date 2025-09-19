@@ -2,7 +2,7 @@ package com.example.befacerecognitionattendance2025.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,8 +24,8 @@ public class Attendance {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    @CreatedDate
-    @Column(name = "work_date", nullable = false)
+    @CreationTimestamp
+    @Column(name = "work_date")
     private LocalDate workDate;
 
     @Column(name = "check_in")

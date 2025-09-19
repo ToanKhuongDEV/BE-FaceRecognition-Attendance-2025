@@ -2,9 +2,15 @@ package com.example.befacerecognitionattendance2025.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "payroll")
+@Table(name = "payroll",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"employee_id", "month", "year"})
+        })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,4 +33,8 @@ public class Payroll {
     private Double bonus;
     private Double deduction;
     private Double finalSalary;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 }

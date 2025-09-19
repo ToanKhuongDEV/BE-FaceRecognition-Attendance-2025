@@ -4,8 +4,10 @@ import com.example.befacerecognitionattendance2025.constant.Gender;
 import com.example.befacerecognitionattendance2025.constant.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -44,6 +46,10 @@ public class Employee {
     private String phoneNumber;
     private String email;
     private String avatar;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FaceData> faceDataList;
