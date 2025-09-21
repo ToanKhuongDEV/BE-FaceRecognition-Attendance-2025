@@ -5,6 +5,7 @@ import com.example.befacerecognitionattendance2025.constant.Gender;
 import com.example.befacerecognitionattendance2025.constant.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class CreationEmployeeRequest {
+public class    CreateEmployeeRequest {
 
     @NotBlank(message = ErrorMessage.Validation.NOT_BLANK)
     private String username;
@@ -26,10 +27,9 @@ public class CreationEmployeeRequest {
 
     private Gender gender;
 
-    @NotBlank(message = ErrorMessage.Validation.NOT_BLANK)
-    private Role role;
-
     private LocalDate dateBirth;
+
+    @Size(min = 10 , max = 10 , message = ErrorMessage.Validation.NOT_BLANK)
     private String phoneNumber;
 
     @NotBlank(message = ErrorMessage.Validation.NOT_BLANK)

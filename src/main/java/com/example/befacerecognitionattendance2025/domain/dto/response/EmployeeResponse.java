@@ -2,6 +2,7 @@ package com.example.befacerecognitionattendance2025.domain.dto.response;
 
 import com.example.befacerecognitionattendance2025.constant.Gender;
 import com.example.befacerecognitionattendance2025.constant.Role;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployeeResponse {
 
     private String id;
@@ -19,8 +21,6 @@ public class EmployeeResponse {
     private Integer employeeCode;
 
     private String username;
-
-    private String password;
 
     private String fullName;
 
