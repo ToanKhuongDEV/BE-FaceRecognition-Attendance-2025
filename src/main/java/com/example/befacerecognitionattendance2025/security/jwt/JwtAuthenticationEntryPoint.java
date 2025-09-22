@@ -1,5 +1,6 @@
 package com.example.befacerecognitionattendance2025.security.jwt;
 
+import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,7 +27,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        RestData<?> responseBody = RestData.error("Xin lỗi, bạn cần cung cấp thông tin xác thực để thực hiện hành động này");
+        RestData<?> responseBody = RestData.error(ErrorMessage.UNAUTHORIZED);
         response.getOutputStream().write(objectMapper.writeValueAsBytes(responseBody));
     }
 }

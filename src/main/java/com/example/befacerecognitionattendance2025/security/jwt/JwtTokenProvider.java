@@ -1,6 +1,7 @@
 package com.example.befacerecognitionattendance2025.security.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -38,16 +39,13 @@ public class JwtTokenProvider {
                 (isRefreshToken ? refreshExpirationMinutes : accessExpirationMinutes) * 60_000;
 
         return Jwts.builder()
-                .claims()
-                .add("sub", userPrincipal.getId())
-                .add("username", userPrincipal.getUsername())
-                .add("scope", buildScope(userPrincipal))
-                .and()
+                .subject(userPrincipal.getId())
+                .claim("username", userPrincipal.getUsername())
+                .claim("scope", buildScope(userPrincipal))
                 .issuedAt(new Date(nowMillis))
                 .expiration(new Date(expMillis))
-                .signWith(getSigningKey(), Jwts.SIG.HS512)
+                .signWith(getSigningKey())
                 .compact();
-
     }
 
     public Claims verifyToken(String token) {
@@ -57,8 +55,40 @@ public class JwtTokenProvider {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+        } catch (ExpiredJwtException e) {
+            log.error("JWT token đã hết hạn: {}", e.getMessage());
+            throw new RuntimeException("Token đã hết hạn");
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("JWT token không hợp lệ: {}", e.getMessage());
+            throw new RuntimeException("Token không hợp lệ");
+        }
+    }
+
+    public String extractUsername(String token) {
+        return verifyToken(token).get("username", String.class);
+    }
+
+    public String extractUserId(String token) {
+        return verifyToken(token).getSubject();
+    }
+
+    public boolean isTokenValid(String token) {
+        try {
+            verifyToken(token);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    public boolean isTokenExpired(String token) {
+        try {
+            Claims claims = verifyToken(token);
+            return claims.getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
         } catch (JwtException e) {
-            throw new RuntimeException("Token không hợp lệ hoặc hết hạn");
+            throw new RuntimeException("Token không hợp lệ");
         }
     }
 
@@ -67,5 +97,4 @@ public class JwtTokenProvider {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
     }
-
 }
