@@ -12,6 +12,7 @@ import com.example.befacerecognitionattendance2025.exception.InvalidException;
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
 import com.example.befacerecognitionattendance2025.service.EmployeeService;
 import com.example.befacerecognitionattendance2025.util.UploadFileUtil;
+import com.example.befacerecognitionattendance2025.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         if( employeeRepository.findByEmail(request.getEmail()).isPresent()){
             throw new DuplicateResourceException(ErrorMessage.Employee.EMAIL_EXISTS);
         }
+        ValidateUtil.validateAge(request.getDateBirth());
+        ValidateUtil.validateCredentials(request.getUsername(), request.getPassword());
         Employee employee = employeeMapper.toEntity(request);
         employee.setRole(Role.STAFF);
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -73,23 +76,4 @@ public class EmployeeServiceImpl implements EmployeeService {
         return null;
     }
 
-    private void validateCredentials(String username, String password) {
-        String USERNAME_REGEX = "^[A-Za-z0-9_.]{5,30}$";
-        if (username == null || !username.matches(USERNAME_REGEX)) {
-            throw new InvalidException(ErrorMessage.Validation.INVALID_USERNAME);
-        }
-        String PASSWORD_REGEX ="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
-        if (password == null || !password.matches(PASSWORD_REGEX)) {
-            throw new InvalidException(ErrorMessage.Validation.INVALID_PASSWORD);
-        }
-    }
-
-    private void validateAge(LocalDate dateOfBirth) {
-        LocalDate today = LocalDate.now();
-        LocalDate minAllowedDate = today.minusYears(18);
-
-        if (dateOfBirth.isAfter(minAllowedDate)) {
-            throw new InvalidException(ErrorMessage.Employee.NOT_ENOUGH_AGE);
-        }
-    }
 }

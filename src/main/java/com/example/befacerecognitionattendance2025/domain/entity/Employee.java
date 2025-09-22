@@ -51,6 +51,8 @@ public class Employee {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    private LocalDateTime lastLogin;
+
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FaceData> faceDataList;
 

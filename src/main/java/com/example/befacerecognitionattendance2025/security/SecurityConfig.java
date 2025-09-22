@@ -1,5 +1,9 @@
 package com.example.befacerecognitionattendance2025.security;
 
+import com.example.befacerecognitionattendance2025.base.RestData;
+import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
+import com.example.befacerecognitionattendance2025.security.jwt.JwtAuthenticationEntryPoint;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -12,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -44,14 +49,23 @@ public class SecurityConfig {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final String[] PUBLIC_ENDPOINTS={
+            "/api/v1/auth/**",
+    };
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -84,15 +98,15 @@ public class SecurityConfig {
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
                 throws ServletException, IOException {
 
-            // Skip authentication for permitted endpoints
-            if (request.getServletPath().startsWith("/api/v1/auth/")) {
+            String path = request.getServletPath();
+            if (path.startsWith("/auth/") || path.startsWith("/api/v1/auth/")) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
             String header = request.getHeader("Authorization");
-
             if (header == null || !header.startsWith("Bearer ")) {
+                // Không có token → vẫn tiếp tục chain (sau này AuthenticationEntryPoint sẽ bắt)
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -120,9 +134,10 @@ public class SecurityConfig {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception ex) {
-
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Invalid token");
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                RestData<?> responseBody = RestData.error(ErrorMessage.INVALID_TOKEN);
+                response.getOutputStream().write(new ObjectMapper().writeValueAsBytes(responseBody));
                 return;
             }
 
