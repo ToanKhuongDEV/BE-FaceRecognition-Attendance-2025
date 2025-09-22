@@ -29,7 +29,7 @@ public class EmployeeController {
     public ResponseEntity<RestData<?>> createEmployee(
             @Valid @RequestPart("data")  CreateEmployeeRequest request,
             @RequestPart(value = "image", required = false) MultipartFile imageFile) {
-        return VsResponseUtil.success(service.createManager(request, imageFile));
+        return VsResponseUtil.success(service.createEmployee(request, imageFile));
     }
 
 

@@ -37,6 +37,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if( employeeRepository.findByEmail(request.getEmail()).isPresent()){
             throw new DuplicateResourceException(ErrorMessage.Employee.EMAIL_EXISTS);
         }
+
         ValidateUtil.validateAge(request.getDateBirth());
         ValidateUtil.validateCredentials(request.getUsername(), request.getPassword());
         Employee employee = employeeMapper.toEntity(request);

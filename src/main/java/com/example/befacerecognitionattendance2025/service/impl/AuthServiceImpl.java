@@ -4,8 +4,6 @@ import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
 import com.example.befacerecognitionattendance2025.domain.dto.request.LoginRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.EmployeeResponse;
 import com.example.befacerecognitionattendance2025.domain.dto.response.LoginResponse;
-import com.example.befacerecognitionattendance2025.domain.entity.Employee;
-import com.example.befacerecognitionattendance2025.exception.NotFoundException;
 import com.example.befacerecognitionattendance2025.exception.UnauthorizedException;
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
 import com.example.befacerecognitionattendance2025.security.UserPrincipal;
@@ -20,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -33,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final EmployeeRepository employeeRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Transactional
     public LoginResponse login(LoginRequest request) {
         try {
             log.info("Attempting login for username: {}", request.getUsername());
