@@ -38,7 +38,9 @@ public class JwtTokenProvider {
         long expMillis = nowMillis +
                 (isRefreshToken ? refreshExpirationMinutes : accessExpirationMinutes) * 60_000;
 
+
         return Jwts.builder()
+                .setHeaderParam("typ", "JWT")
                 .subject(userPrincipal.getId())
                 .claim("username", userPrincipal.getUsername())
                 .claim("scope", buildScope(userPrincipal))
