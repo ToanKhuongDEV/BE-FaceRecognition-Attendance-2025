@@ -5,7 +5,6 @@ public class ErrorMessage {
     public static String INVALID_IMAGE_FILE = "chỉ được upload ảnh";
     public static final String UNAUTHORIZED = "Xin lỗi, bạn cần cung cấp thông tin xác thực để thực hiện hành động này";
     public static final String FORBIDDEN = "Xin lỗi, bạn không có quyền để thực hiện hành động này";
-    public static final String INVALID_TOKEN = "Token không hợp lệ hoặc hết hạn";
 
 
     public static class Validation {
@@ -19,6 +18,8 @@ public class ErrorMessage {
 
     public static class Auth {
         public static final String ERR_INCORRECT_CREDENTIALS = "Username hoặc mật khẩu không chính xác";
+        public static final String INVALID_REFRESH_TOKEN = "Refresh token không hợp lệ hoặc đã hết hạn";
+        public static final String INVALID_TOKEN = "Token không hợp lệ hoặc hết hạn";
     }
 
     public static class Employee{

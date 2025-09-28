@@ -4,17 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "attendance")
+@Table(name = "performance")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Attendance {
+public class Performance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -24,19 +23,14 @@ public class Attendance {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
+    private Integer month;
+    private Integer year;
+
+    private Double totalWorkDays;
+    private Double totalOvertimeHours;
+    private Double kpiScore; // điểm đánh giá hiệu suất
+
     @CreationTimestamp
-    @Column(name = "work_date")
-    private LocalDate workDate;
-
-    @Column(name = "check_in")
-    private LocalDateTime checkInTime;
-
-    @Column(name = "check_out")
-    private LocalDateTime checkOutTime;
-
-    @Column(name = "total_hours")
-    private Double totalHours;
-
-    @Column(name = "overtime_hours")
-    private Double overtimeHours;
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 }

@@ -1,24 +1,34 @@
 package com.example.befacerecognitionattendance2025.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
+import com.example.befacerecognitionattendance2025.exception.InvalidException;
+import com.example.befacerecognitionattendance2025.security.UserPrincipal;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import com.example.befacerecognitionattendance2025.security.UserPrincipal;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class JwtTokenProvider {
+
+    private final String CLAIM_TYPE = "type";
+    private final String TYPE_ACCESS = "access";
+    private final String TYPE_REFRESH = "refresh";
+    private final String USERNAME_KEY = "username";
+    private final String AUTHORITIES_KEY = "auth";
 
     @Value("${jwt.secret}")
     private String secretKeyString;
@@ -38,63 +48,106 @@ public class JwtTokenProvider {
         long expMillis = nowMillis +
                 (isRefreshToken ? refreshExpirationMinutes : accessExpirationMinutes) * 60_000;
 
-        return Jwts.builder()
-                .subject(userPrincipal.getId())
-                .claim("username", userPrincipal.getUsername())
-                .claim("scope", buildScope(userPrincipal))
-                .issuedAt(new Date(nowMillis))
-                .expiration(new Date(expMillis))
-                .signWith(getSigningKey())
-                .compact();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(CLAIM_TYPE, isRefreshToken ? TYPE_REFRESH : TYPE_ACCESS);
+        claims.put(USERNAME_KEY, userPrincipal.getUsername());
+        claims.put(AUTHORITIES_KEY, userPrincipal.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(",")));
+        claims.put("id", userPrincipal.getId());
+
+
+        JwtBuilder builder = Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date(nowMillis))
+                .setExpiration(new Date(expMillis))
+                .signWith(getSigningKey());
+
+        if (!isRefreshToken) {
+            builder.setSubject(userPrincipal.getId());
+        }
+
+        return builder.compact();
     }
 
-    public Claims verifyToken(String token) {
+    // Lấy Authentication từ refresh token
+    public Authentication getAuthenticationByRefreshToken(String refreshToken) {
+        Claims claims = parseToken(refreshToken);
+
+        if (!TYPE_REFRESH.equals(claims.get(CLAIM_TYPE)) ||
+                ObjectUtils.isEmpty(claims.get(USERNAME_KEY)) ||
+                ObjectUtils.isEmpty(claims.get(AUTHORITIES_KEY))) {
+            throw new InvalidException(ErrorMessage.Auth.INVALID_REFRESH_TOKEN);
+        }
+
+        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        UserDetails principal = new UserPrincipal(claims.get("id", String.class),claims.get(USERNAME_KEY).toString(), "", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    // Lấy Authentication từ Access token
+    public Authentication getAuthenticationByAccessToken(String accessToken) {
+        Claims claims = parseToken(accessToken);
+
+        if (!TYPE_ACCESS.equals(claims.get(CLAIM_TYPE)) ||
+                ObjectUtils.isEmpty(claims.get(USERNAME_KEY)) ||
+                ObjectUtils.isEmpty(claims.get(AUTHORITIES_KEY))) {
+            throw new InvalidException(ErrorMessage.Auth.INVALID_TOKEN);
+        }
+
+        // Parse authorities từ claim "auth"
+        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        // Tạo UserPrincipal từ ID và username
+        UserDetails principal = new UserPrincipal(
+                claims.get("id", String.class),
+                claims.get(USERNAME_KEY, String.class),
+                "", // password không cần
+                authorities
+        );
+
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+
+    // Validate token (Access hoặc Refresh)
+    public boolean validateToken(String token) {
         try {
-            return Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-        } catch (ExpiredJwtException e) {
-            log.error("JWT token đã hết hạn: {}", e.getMessage());
-            throw new RuntimeException("Token đã hết hạn");
+            this.parseToken(token);
+            return true;
         } catch (JwtException | IllegalArgumentException e) {
             log.error("JWT token không hợp lệ: {}", e.getMessage());
-            throw new RuntimeException("Token không hợp lệ");
-        }
-    }
-
-    public String extractUsername(String token) {
-        return verifyToken(token).get("username", String.class);
-    }
-
-    public String extractUserId(String token) {
-        return verifyToken(token).getSubject();
-    }
-
-    public boolean isTokenValid(String token) {
-        try {
-            verifyToken(token);
-            return true;
-        } catch (RuntimeException e) {
             return false;
         }
     }
 
-    public boolean isTokenExpired(String token) {
-        try {
-            Claims claims = verifyToken(token);
-            return claims.getExpiration().before(new Date());
-        } catch (ExpiredJwtException e) {
-            return true;
-        } catch (JwtException e) {
-            throw new RuntimeException("Token không hợp lệ");
-        }
+    // Lấy Claims từ token
+    private Claims parseToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    private String buildScope(UserPrincipal userPrincipal) {
-        return userPrincipal.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
+    public String extractUsername(String token) {
+        return parseToken(token).get(USERNAME_KEY, String.class);
+    }
+
+    public String extractUserId(String token) {
+        return parseToken(token).getSubject();
+    }
+
+    public Date extractExpiration(String token) {
+        return parseToken(token).getExpiration();
+    }
+
+    public boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 }
