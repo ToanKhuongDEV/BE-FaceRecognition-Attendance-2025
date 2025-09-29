@@ -6,6 +6,7 @@ public class UrlConstant {
     public static class Auth {
         private static final String PRE_FIX = "/auth";
         public static final String LOGIN = PRE_FIX + "/login";
+        public static final String REFRESH = PRE_FIX + "/refresh";
     }
     public static class Employee {
         private static final String PRE_FIX = "/accounts";
