@@ -5,6 +5,7 @@ import com.example.befacerecognitionattendance2025.base.RestData;
 import com.example.befacerecognitionattendance2025.base.VsResponseUtil;
 import com.example.befacerecognitionattendance2025.constant.UrlConstant;
 import com.example.befacerecognitionattendance2025.domain.dto.request.LoginRequest;
+import com.example.befacerecognitionattendance2025.domain.dto.request.RefreshTokenRequest;
 import com.example.befacerecognitionattendance2025.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,11 @@ public class AuthController {
     @PostMapping(UrlConstant.Auth.LOGIN)
     public ResponseEntity<RestData<?>> login(@Valid @RequestBody LoginRequest request ) {
         return VsResponseUtil.success(service.login(request));
+    }
+
+    @PostMapping(UrlConstant.Auth.REFRESH)
+    public ResponseEntity<RestData<?>> refreshToken(@Valid @RequestBody RefreshTokenRequest request ) {
+        return VsResponseUtil.success(service.refreshToken(request));
     }
 
 }

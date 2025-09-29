@@ -2,6 +2,7 @@ package com.example.befacerecognitionattendance2025.service.impl;
 
 import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
 import com.example.befacerecognitionattendance2025.domain.dto.request.LoginRequest;
+import com.example.befacerecognitionattendance2025.domain.dto.request.RefreshTokenRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.EmployeeResponse;
 import com.example.befacerecognitionattendance2025.domain.dto.response.LoginResponse;
 import com.example.befacerecognitionattendance2025.exception.UnauthorizedException;
@@ -68,9 +69,37 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginResponse refreshToken(String refreshTokenRequest) {
-        return null;
+    public LoginResponse refreshToken(RefreshTokenRequest request) {
+        try {
+            log.info("Refreshing token...");
+
+            // 1. Validate token trước khi dùng
+            if (!jwtTokenProvider.validateToken(request.getRefreshToken())) {
+                throw new UnauthorizedException(ErrorMessage.Auth.INVALID_REFRESH_TOKEN);
+            }
+
+            // 2. Lấy Authentication từ refresh token
+            Authentication authentication = jwtTokenProvider.getAuthenticationByRefreshToken(request.getRefreshToken());
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+            // 3. Sinh access token mới
+            String newAccessToken = jwtTokenProvider.generateToken(userPrincipal, false);
+
+            log.info("Refresh token thành công cho user ID: {}", userPrincipal.getId());
+
+            return new LoginResponse(
+                    newAccessToken,
+                    request.getRefreshToken(),
+                    userPrincipal.getId(),
+                    userPrincipal.getAuthorities()
+            );
+
+        } catch (Exception ex) {
+            log.warn("Refresh token failed: {}", ex.getMessage());
+            throw new UnauthorizedException(ErrorMessage.Auth.INVALID_REFRESH_TOKEN);
+        }
     }
+
 
     @Override
     public EmployeeResponse changePassword(String oldPassword, String newPassword) {
