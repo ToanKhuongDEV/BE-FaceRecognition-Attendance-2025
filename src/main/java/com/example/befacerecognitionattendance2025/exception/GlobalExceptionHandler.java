@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<RestData<?>> handleAccessDeniedException(AccessDeniedException ex) {
-        return VsResponseUtil.error(HttpStatus.FORBIDDEN, ex.getMessage());
+        return VsResponseUtil.error(HttpStatus.FORBIDDEN,ErrorMessage.ERR_FORBIDDEN);
     }
 
     @ExceptionHandler(NotFoundException.class)

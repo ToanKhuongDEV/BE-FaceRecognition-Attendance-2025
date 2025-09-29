@@ -10,11 +10,11 @@ public class ValidateUtil {
     public static void validateCredentials(String username, String password) {
         String USERNAME_REGEX = "^[A-Za-z0-9_.]{5,30}$";
         if (username == null || !username.matches(USERNAME_REGEX)) {
-            throw new InvalidException(ErrorMessage.Validation.INVALID_USERNAME);
+            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_USERNAME);
         }
         String PASSWORD_REGEX ="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
         if (password == null || !password.matches(PASSWORD_REGEX)) {
-            throw new InvalidException(ErrorMessage.Validation.INVALID_PASSWORD);
+            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_PASSWORD);
         }
     }
 
@@ -23,7 +23,7 @@ public class ValidateUtil {
         LocalDate minAllowedDate = today.minusYears(18);
 
         if (dateOfBirth.isAfter(minAllowedDate)) {
-            throw new InvalidException(ErrorMessage.Employee.NOT_ENOUGH_AGE);
+            throw new InvalidException(ErrorMessage.Employee.ERR_NOT_ENOUGH_AGE);
         }
     }
 }

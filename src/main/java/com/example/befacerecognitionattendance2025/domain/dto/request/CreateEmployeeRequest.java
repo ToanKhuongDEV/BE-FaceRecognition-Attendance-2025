@@ -15,12 +15,12 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class    CreateEmployeeRequest {
+public class CreateEmployeeRequest {
 
-    @NotBlank(message = ErrorMessage.Validation.NOT_BLANK)
+    @NotBlank(message = ErrorMessage.Validation.ERR_NOT_BLANK)
     private String username;
 
-    @NotBlank(message = ErrorMessage.Validation.NOT_BLANK)
+    @NotBlank(message = ErrorMessage.Validation.ERR_NOT_BLANK)
     private String password;
 
     private String fullName;
@@ -29,11 +29,11 @@ public class    CreateEmployeeRequest {
 
     private LocalDate dateBirth;
 
-    @Size(min = 10 , max = 10 , message = ErrorMessage.Validation.NOT_BLANK)
+    @Size(min = 10 , max = 10 , message = ErrorMessage.Validation.ERR_INVALID_PHONE_NUMBER)
     private String phoneNumber;
 
-    @NotBlank(message = ErrorMessage.Validation.NOT_BLANK)
-    @Email(message = ErrorMessage.Validation.INVALID_EMAIL)
+    @NotBlank(message = ErrorMessage.Validation.ERR_NOT_BLANK)
+    @Email(message = ErrorMessage.Validation.ERR_INVALID_EMAIL)
     private String email;
 
 }

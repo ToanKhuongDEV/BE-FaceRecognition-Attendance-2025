@@ -11,6 +11,6 @@ import lombok.*;
 @Builder
 public class RefreshTokenRequest {
 
-    @NotBlank(message = ErrorMessage.Validation.NOT_BLANK)
+    @NotBlank(message = ErrorMessage.Validation.ERR_NOT_BLANK)
     String refreshToken;
 }

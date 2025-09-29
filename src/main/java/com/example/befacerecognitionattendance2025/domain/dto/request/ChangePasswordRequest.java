@@ -2,19 +2,18 @@ package com.example.befacerecognitionattendance2025.domain.dto.request;
 
 import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+public class ChangePasswordRequest {
 
     @NotBlank(message = ErrorMessage.Validation.ERR_NOT_BLANK)
-    private String username;
+    private String oldPassword;
 
     @NotBlank(message = ErrorMessage.Validation.ERR_NOT_BLANK)
-    private String password;
-
+    private String newPassword;
 }

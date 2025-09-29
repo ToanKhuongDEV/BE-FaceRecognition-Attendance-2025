@@ -80,7 +80,7 @@ public class UploadFileUtil {
     public static void validateIsImage(MultipartFile file) {
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
-            throw new UploadFileException(ErrorMessage.INVALID_IMAGE_FILE);
+            throw new UploadFileException(ErrorMessage.ERR_INVALID_IMAGE_FILE);
         }
     }
 }

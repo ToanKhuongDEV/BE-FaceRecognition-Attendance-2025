@@ -1,10 +1,13 @@
 package com.example.befacerecognitionattendance2025.service.impl;
 
 import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
+import com.example.befacerecognitionattendance2025.domain.dto.request.ChangePasswordRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.request.LoginRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.request.RefreshTokenRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.EmployeeResponse;
 import com.example.befacerecognitionattendance2025.domain.dto.response.LoginResponse;
+import com.example.befacerecognitionattendance2025.domain.mapper.EmployeeMapper;
+import com.example.befacerecognitionattendance2025.exception.InvalidException;
 import com.example.befacerecognitionattendance2025.exception.UnauthorizedException;
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
 import com.example.befacerecognitionattendance2025.security.UserPrincipal;
@@ -18,6 +21,7 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +35,11 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final EmployeeRepository employeeRepository;
+    private final EmployeeMapper employeeMapper;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
+    @Override
     @Transactional
     public LoginResponse login(LoginRequest request) {
         try {
@@ -75,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
 
             // 1. Validate token trước khi dùng
             if (!jwtTokenProvider.validateToken(request.getRefreshToken())) {
-                throw new UnauthorizedException(ErrorMessage.Auth.INVALID_REFRESH_TOKEN);
+                throw new UnauthorizedException(ErrorMessage.Auth.ERR_INVALID_REFRESH_TOKEN);
             }
 
             // 2. Lấy Authentication từ refresh token
@@ -96,18 +103,53 @@ public class AuthServiceImpl implements AuthService {
 
         } catch (Exception ex) {
             log.warn("Refresh token failed: {}", ex.getMessage());
-            throw new UnauthorizedException(ErrorMessage.Auth.INVALID_REFRESH_TOKEN);
+            throw new UnauthorizedException(ErrorMessage.Auth.ERR_INVALID_REFRESH_TOKEN);
         }
     }
 
 
     @Override
-    public EmployeeResponse changePassword(String oldPassword, String newPassword) {
-        return null;
+    @Transactional
+    public EmployeeResponse changePassword(ChangePasswordRequest request) {
+        // 1. Lấy user hiện tại từ SecurityContext
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+        // 2. Tìm employee từ DB
+        var employee = employeeRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new InvalidException(ErrorMessage.Employee.ERR_NOT_FOUND));
+
+        // 3. Kiểm tra mật khẩu cũ
+        if (!passwordEncoder.matches(request.getOldPassword(), employee.getPassword())) {
+            throw new UnauthorizedException(ErrorMessage.Auth.ERR_INCORRECT_CREDENTIALS);
+        }
+
+        if(!this.validatePassword(request.getNewPassword())){
+            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_PASSWORD);
+        }
+        // 4. Encode mật khẩu mới và lưu lại
+        employee.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        employeeRepository.save(employee);
+
+        // 5. Trả về EmployeeResponse
+        return employeeMapper.toResponse(employee);
     }
+
 
     @Override
     public EmployeeResponse verifyPassword(String password) {
         return null;
     }
+
+    private Boolean validatePassword(String password) {
+        if (password == null) {
+            return false;
+        }
+        if (password.length() < 8) {
+            return false;
+        }
+        String regex = "^(?=.*[A-Za-z])(?=.*\\d).+$";
+        return password.matches(regex);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.example.befacerecognitionattendance2025.service;
 
+import com.example.befacerecognitionattendance2025.domain.dto.request.ChangePasswordRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.request.LoginRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.request.RefreshTokenRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.EmployeeResponse;
@@ -11,7 +12,7 @@ public interface AuthService {
 
     LoginResponse refreshToken(RefreshTokenRequest  request) ;
 
-    EmployeeResponse changePassword(String oldPassword, String newPassword);
+    EmployeeResponse changePassword(ChangePasswordRequest request) ;
 
     EmployeeResponse verifyPassword(String password);
 

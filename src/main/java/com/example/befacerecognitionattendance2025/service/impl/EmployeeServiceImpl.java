@@ -35,7 +35,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponse createEmployee(CreateEmployeeRequest request, MultipartFile imageFile) {
 
         if( employeeRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new DuplicateResourceException(ErrorMessage.Employee.EMAIL_EXISTS);
+            throw new DuplicateResourceException(ErrorMessage.Employee.ERR_EMAIL_EXISTS);
         }
 
         ValidateUtil.validateAge(request.getDateBirth());

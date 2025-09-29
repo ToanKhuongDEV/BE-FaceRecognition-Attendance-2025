@@ -77,7 +77,7 @@ public class JwtTokenProvider {
         if (!TYPE_REFRESH.equals(claims.get(CLAIM_TYPE)) ||
                 ObjectUtils.isEmpty(claims.get(USERNAME_KEY)) ||
                 ObjectUtils.isEmpty(claims.get(AUTHORITIES_KEY))) {
-            throw new InvalidException(ErrorMessage.Auth.INVALID_REFRESH_TOKEN);
+            throw new InvalidException(ErrorMessage.Auth.ERR_INVALID_REFRESH_TOKEN);
         }
 
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
@@ -95,7 +95,7 @@ public class JwtTokenProvider {
         if (!TYPE_ACCESS.equals(claims.get(CLAIM_TYPE)) ||
                 ObjectUtils.isEmpty(claims.get(USERNAME_KEY)) ||
                 ObjectUtils.isEmpty(claims.get(AUTHORITIES_KEY))) {
-            throw new InvalidException(ErrorMessage.Auth.INVALID_TOKEN);
+            throw new InvalidException(ErrorMessage.Auth.ERR_INVALID_TOKEN);
         }
 
         // Parse authorities từ claim "auth"

@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception ex) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                RestData<?> responseBody = RestData.error(ErrorMessage.Auth.INVALID_TOKEN);
+                RestData<?> responseBody = RestData.error(ErrorMessage.Auth.ERR_INVALID_TOKEN);
                 response.getOutputStream().write(new ObjectMapper().writeValueAsBytes(responseBody));
                 return;
             }
