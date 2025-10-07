@@ -37,6 +37,4 @@ public class Attendance {
     @Column(name = "total_hours")
     private Double totalHours;
 
-    @Column(name = "overtime_hours")
-    private Double overtimeHours;
 }

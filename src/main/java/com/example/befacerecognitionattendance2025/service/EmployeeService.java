@@ -1,5 +1,6 @@
 package com.example.befacerecognitionattendance2025.service;
 
+import com.example.befacerecognitionattendance2025.domain.dto.request.ChangePasswordRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.request.CreateEmployeeRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.request.UpdateEmployeeRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.EmployeeResponse;
@@ -11,6 +12,7 @@ public interface EmployeeService {
     EmployeeResponse createManager (CreateEmployeeRequest request, MultipartFile file);
     EmployeeResponse deleteEmployee ( String id);
     EmployeeResponse updateEmployee ( String id, UpdateEmployeeRequest request, MultipartFile file);
+    EmployeeResponse changePassword(ChangePasswordRequest request) ;
 
     EmployeeResponse getAllEmployee ();
 

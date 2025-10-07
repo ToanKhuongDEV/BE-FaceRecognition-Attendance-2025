@@ -107,49 +107,9 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-
-    @Override
-    @Transactional
-    public EmployeeResponse changePassword(ChangePasswordRequest request) {
-        // 1. Lấy user hiện tại từ SecurityContext
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
-        // 2. Tìm employee từ DB
-        var employee = employeeRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new InvalidException(ErrorMessage.Employee.ERR_NOT_FOUND));
-
-        // 3. Kiểm tra mật khẩu cũ
-        if (!passwordEncoder.matches(request.getOldPassword(), employee.getPassword())) {
-            throw new UnauthorizedException(ErrorMessage.Auth.ERR_INCORRECT_CREDENTIALS);
-        }
-
-        if(!this.validatePassword(request.getNewPassword())){
-            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_PASSWORD);
-        }
-        // 4. Encode mật khẩu mới và lưu lại
-        employee.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        employeeRepository.save(employee);
-
-        // 5. Trả về EmployeeResponse
-        return employeeMapper.toResponse(employee);
-    }
-
-
     @Override
     public EmployeeResponse verifyPassword(String password) {
         return null;
-    }
-
-    private Boolean validatePassword(String password) {
-        if (password == null) {
-            return false;
-        }
-        if (password.length() < 8) {
-            return false;
-        }
-        String regex = "^(?=.*[A-Za-z])(?=.*\\d).+$";
-        return password.matches(regex);
     }
 
 }

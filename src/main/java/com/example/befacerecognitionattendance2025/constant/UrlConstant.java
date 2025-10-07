@@ -12,5 +12,6 @@ public class UrlConstant {
         private static final String PRE_FIX = "/accounts";
         public static final String COMMON = PRE_FIX;
         public static final String ID = PRE_FIX + "/{id}";
+        public static final String CHANGE_PASSWORD = PRE_FIX + "/change-password";
     }
 }

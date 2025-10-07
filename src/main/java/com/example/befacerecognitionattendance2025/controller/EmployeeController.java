@@ -4,6 +4,7 @@ import com.example.befacerecognitionattendance2025.base.RestApiV1;
 import com.example.befacerecognitionattendance2025.base.RestData;
 import com.example.befacerecognitionattendance2025.base.VsResponseUtil;
 import com.example.befacerecognitionattendance2025.constant.UrlConstant;
+import com.example.befacerecognitionattendance2025.domain.dto.request.ChangePasswordRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.request.CreateEmployeeRequest;
 import com.example.befacerecognitionattendance2025.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,5 +35,9 @@ public class EmployeeController {
     }
 
 
+    @PostMapping(UrlConstant.Employee.CHANGE_PASSWORD)
+    public ResponseEntity<RestData<?>> changePassword(@Valid @RequestBody ChangePasswordRequest request ) {
+        return VsResponseUtil.success(service.changePassword(request));
+    }
 
 }
