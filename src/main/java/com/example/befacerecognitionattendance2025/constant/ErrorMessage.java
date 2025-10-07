@@ -24,6 +24,7 @@ public class ErrorMessage {
 
     public static class Employee{
         public static final String ERR_EMAIL_EXISTS = "Email đã tồn tại";
+        public static final String ERR_USERNAME_EXISTS = "Username đã tồn tại";
         public static final String ERR_NOT_ENOUGH_AGE = "Nhân viên phải đủ 18 tuổi";
         public static final String ERR_NOT_FOUND = "Không tìm thấy nhân viên";
     }

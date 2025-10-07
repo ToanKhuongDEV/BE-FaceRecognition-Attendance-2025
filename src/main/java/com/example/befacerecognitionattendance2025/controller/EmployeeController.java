@@ -23,7 +23,7 @@ public class EmployeeController {
 
     private final EmployeeService service;
 
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @PostMapping(
             value = UrlConstant.Employee.COMMON,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
