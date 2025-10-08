@@ -21,6 +21,9 @@ public class Department {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(name = "base_salary")
+    private Double baseSalary;
+
     private String description;
 
     @OneToMany(mappedBy = "department")
