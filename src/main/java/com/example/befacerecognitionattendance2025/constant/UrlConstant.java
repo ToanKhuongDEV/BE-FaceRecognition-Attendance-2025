@@ -14,4 +14,10 @@ public class UrlConstant {
         public static final String ID = PRE_FIX + "/{id}";
         public static final String CHANGE_PASSWORD = PRE_FIX + "/change-password";
     }
+    public static class Department {
+        private static final String PRE_FIX = "/departments";
+        public static final String COMMON = PRE_FIX;
+        public static final String ID = PRE_FIX + "/{id}";
+        public static final String ADD_EMPLOYEE = ID + "/department";
+    }
 }
