@@ -58,4 +58,10 @@ public class DepartmentController {
         DepartmentResponse response = departmentService.addEmployeesToDepartment(id, request);
         return VsResponseUtil.success(response);
     }
+
+    @PreAuthorize("hasAuthority('MANAGER')")
+    @GetMapping(UrlConstant.Department.COMMON)
+    public ResponseEntity<RestData<?>> getAllDepartments() {
+        return VsResponseUtil.success(departmentService.findAllDepartments());
+    }
 }
