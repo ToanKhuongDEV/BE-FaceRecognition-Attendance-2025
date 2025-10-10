@@ -27,6 +27,13 @@ public class ErrorMessage {
         public static final String ERR_USERNAME_EXISTS = "Username đã tồn tại";
         public static final String ERR_NOT_ENOUGH_AGE = "Nhân viên phải đủ 18 tuổi";
         public static final String ERR_NOT_FOUND = "Không tìm thấy nhân viên";
+        public static final String ERR_INVALID_E = "Nhân viên đã trong 1 phòng ban khác: ";
+    }
+
+    public static class Department {
+        public static final String ERR_INVALID_SALARY = "Base salary must be greater than 0";
+        public static final String ERR_NAME_EXISTS = "Tên phòng ban đã tồn tại";
+        public static final String ERR_NOT_FOUND = "Không tìm thấy phòng ban";
     }
 
 }
