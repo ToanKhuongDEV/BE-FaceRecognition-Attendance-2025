@@ -21,6 +21,8 @@ public interface DepartmentMapper {
     @Mapping(target = "employeeNames", expression = "java(getEmployeeNames(department))")
     DepartmentResponse toResponse(Department department);
 
+    List<DepartmentResponse> toResponseList(List<Department> departments);
+
     default List<String> getEmployeeNames(Department department) {
         if (department.getEmployees() == null) return null;
         return department.getEmployees().stream()

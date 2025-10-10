@@ -18,4 +18,6 @@ public interface DepartmentService {
     DepartmentResponse findDepartmentById(String id);
 
     DepartmentResponse addEmployeesToDepartment(String departmentId, AddEmployeesRequest request);
+
+    List<DepartmentResponse> findAllDepartments();
 }

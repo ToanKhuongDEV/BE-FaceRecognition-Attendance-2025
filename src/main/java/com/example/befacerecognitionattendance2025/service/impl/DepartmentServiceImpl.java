@@ -101,4 +101,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         return departmentMapper.toResponse(updated);
     }
 
+    @Override
+    public List<DepartmentResponse> findAllDepartments() {
+        return departmentMapper.toResponseList(departmentRepository.findAll());
+    }
+
 }
