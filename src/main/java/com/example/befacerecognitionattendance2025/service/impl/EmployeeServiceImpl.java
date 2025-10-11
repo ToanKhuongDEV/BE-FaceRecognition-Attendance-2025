@@ -10,6 +10,7 @@ import com.example.befacerecognitionattendance2025.domain.entity.Employee;
 import com.example.befacerecognitionattendance2025.domain.mapper.EmployeeMapper;
 import com.example.befacerecognitionattendance2025.exception.DuplicateResourceException;
 import com.example.befacerecognitionattendance2025.exception.InvalidException;
+import com.example.befacerecognitionattendance2025.exception.NotFoundException;
 import com.example.befacerecognitionattendance2025.exception.UnauthorizedException;
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
 import com.example.befacerecognitionattendance2025.security.UserPrincipal;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +71,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 2. Tìm employee từ DB
         var employee = employeeRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new InvalidException(ErrorMessage.Employee.ERR_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND));
 
         // 3. Kiểm tra mật khẩu cũ
         if (!passwordEncoder.matches(request.getOldPassword(), employee.getPassword())) {
@@ -88,28 +90,76 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public EmployeeResponse createManager(CreateEmployeeRequest request, MultipartFile file) {
-        return null;
+        if (employeeRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new DuplicateResourceException(ErrorMessage.Employee.ERR_EMAIL_EXISTS);
+        }
+        if (employeeRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new DuplicateResourceException(ErrorMessage.Employee.ERR_USERNAME_EXISTS);
+        }
+
+        ValidateUtil.validateAge(request.getDateBirth());
+        ValidateUtil.validateCredentials(request.getUsername(), request.getPassword());
+
+        Employee manager = employeeMapper.toEntity(request);
+        manager.setRole(Role.MANAGER);
+
+        if (file != null && !file.isEmpty()) {
+            UploadFileUtil.validateIsImage(file);
+            String imageUrl = uploadFileUtil.uploadImage(file);
+            manager.setAvatar(imageUrl);
+        }
+
+        manager.setPassword(passwordEncoder.encode(request.getPassword()));
+        employeeRepository.save(manager);
+        return employeeMapper.toResponse(manager);
     }
 
     @Override
+    @Transactional
     public EmployeeResponse deleteEmployee(String id) {
-        return null;
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND));
+
+        employeeRepository.delete(employee);
+        return employeeMapper.toResponse(employee);
     }
 
     @Override
+    @Transactional
     public EmployeeResponse updateEmployee(String id, UpdateEmployeeRequest request, MultipartFile file) {
-        return null;
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND));
+
+        if (request.getEmail() != null && !request.getEmail().equals(employee.getEmail())) {
+            if (employeeRepository.findByEmail(request.getEmail()).isPresent()) {
+                throw new DuplicateResourceException(ErrorMessage.Employee.ERR_EMAIL_EXISTS);
+            }
+        }
+
+       employeeMapper.updateEmployee(request,employee);
+
+        if (file != null && !file.isEmpty()) {
+            UploadFileUtil.validateIsImage(file);
+            String imageUrl = uploadFileUtil.uploadImage(file);
+            employee.setAvatar(imageUrl);
+        }
+
+        employeeRepository.save(employee);
+        return employeeMapper.toResponse(employee);
     }
 
     @Override
-    public EmployeeResponse getAllEmployee() {
-        return null;
+    public List<EmployeeResponse> getAllEmployee() {
+        return employeeMapper.toResponseList(employeeRepository.findAll());
     }
 
     @Override
     public EmployeeResponse getEmployeeById(String id) {
-        return null;
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND));
+        return employeeMapper.toResponse(employee);
     }
 
     private Boolean validatePassword(String password) {

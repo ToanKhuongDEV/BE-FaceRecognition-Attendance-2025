@@ -4,7 +4,10 @@ import com.example.befacerecognitionattendance2025.domain.dto.request.CreateEmpl
 import com.example.befacerecognitionattendance2025.domain.dto.request.UpdateEmployeeRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.EmployeeResponse;
 import com.example.befacerecognitionattendance2025.domain.entity.Employee;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -18,6 +21,7 @@ public interface EmployeeMapper {
 
     Employee toEntity(CreateEmployeeRequest request);
 
-    Employee toUpdateEntity(UpdateEmployeeRequest request);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEmployee (UpdateEmployeeRequest request, @MappingTarget Employee employee);
 
 }

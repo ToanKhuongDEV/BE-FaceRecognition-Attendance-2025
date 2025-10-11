@@ -6,6 +6,8 @@ import com.example.befacerecognitionattendance2025.domain.dto.request.UpdateEmpl
 import com.example.befacerecognitionattendance2025.domain.dto.response.EmployeeResponse;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface EmployeeService {
 
     EmployeeResponse createEmployee (CreateEmployeeRequest request, MultipartFile file);
@@ -14,8 +16,7 @@ public interface EmployeeService {
     EmployeeResponse updateEmployee ( String id, UpdateEmployeeRequest request, MultipartFile file);
     EmployeeResponse changePassword(ChangePasswordRequest request) ;
 
-    EmployeeResponse getAllEmployee ();
+    List<EmployeeResponse> getAllEmployee();
 
-    EmployeeResponse getEmployeeById (String id);
-
+    EmployeeResponse getEmployeeById(String id);
 }
