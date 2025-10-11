@@ -63,6 +63,22 @@ public class EmployeeController {
         return VsResponseUtil.success(service.updateEmployee(id, request, imageFile));
     }
 
+    @PatchMapping(
+            value = UrlConstant.Employee.ME,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<RestData<?>> updateEmployee(
+            @Valid @RequestPart("data") UpdateEmployeeRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile
+    ) {
+        return VsResponseUtil.success(service.updateMyProfile(request, imageFile));
+    }
+
+    @GetMapping(UrlConstant.Employee.ME)
+    public ResponseEntity<RestData<?>> getMyProfile(){
+        return VsResponseUtil.success(service.getMe());
+    }
+
     @PreAuthorize("hasAuthority('MANAGER')")
     @DeleteMapping(UrlConstant.Employee.ID)
     public ResponseEntity<RestData<?>> deleteEmployee(@PathVariable("id") String id) {

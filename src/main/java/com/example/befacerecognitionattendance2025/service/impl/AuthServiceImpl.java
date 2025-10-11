@@ -110,4 +110,19 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
+    public static String getCurrentUserId() {
+        var authentication = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) return null;
+
+        var principal = authentication.getPrincipal();
+
+        if (principal instanceof UserPrincipal userDetails) {
+            log.info("Current user ID: {}", userDetails.getId());
+            return userDetails.getId();
+        }
+        return null;
+    }
+
 }
