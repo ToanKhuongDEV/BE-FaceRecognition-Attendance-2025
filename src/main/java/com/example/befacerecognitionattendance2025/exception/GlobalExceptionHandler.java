@@ -43,4 +43,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<RestData<?>> handleUploadFileException(UploadFileException ex) {
         return VsResponseUtil.error(ex.getStatus(), ex.getMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<RestData<?>> handleUncaughtException(Exception ex) {
+        ex.printStackTrace();
+
+        return VsResponseUtil.error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.ERR);
+    }
+
 }

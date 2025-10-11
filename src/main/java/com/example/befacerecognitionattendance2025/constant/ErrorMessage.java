@@ -5,6 +5,7 @@ public class ErrorMessage {
     public static String ERR_INVALID_IMAGE_FILE = "chỉ được upload ảnh";
     public static final String ERR_UNAUTHORIZED = "Xin lỗi, bạn cần cung cấp thông tin xác thực để thực hiện hành động này";
     public static final String ERR_FORBIDDEN = "Xin lỗi, bạn không có quyền để thực hiện hành động này";
+    public static final String ERR = "Đã xảy ra lỗi không xác định";
 
 
     public static class Validation {

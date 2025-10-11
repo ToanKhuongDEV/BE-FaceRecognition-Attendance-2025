@@ -47,9 +47,6 @@ public class Employee {
     private String email;
     private String avatar;
 
-    @Column(name = "is_active")
-    private Boolean isActive = true;
-
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
