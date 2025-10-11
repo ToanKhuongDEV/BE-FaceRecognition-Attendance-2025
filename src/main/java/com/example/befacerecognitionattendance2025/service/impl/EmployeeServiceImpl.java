@@ -151,6 +151,30 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
+    public EmployeeResponse updateMyProfile(UpdateEmployeeRequest request, MultipartFile file) {
+        Employee employee = employeeRepository.findById(AuthServiceImpl.getCurrentUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND));
+
+        if (request.getEmail() != null && !request.getEmail().equals(employee.getEmail())) {
+            if (employeeRepository.findByEmail(request.getEmail()).isPresent()) {
+                throw new DuplicateResourceException(ErrorMessage.Employee.ERR_EMAIL_EXISTS);
+            }
+        }
+
+        employeeMapper.updateEmployee(request,employee);
+
+        if (file != null && !file.isEmpty()) {
+            UploadFileUtil.validateIsImage(file);
+            String imageUrl = uploadFileUtil.uploadImage(file);
+            employee.setAvatar(imageUrl);
+        }
+
+        employeeRepository.save(employee);
+        return employeeMapper.toResponse(employee);
+    }
+
+    @Override
     public List<EmployeeResponse> getAllEmployee() {
         return employeeMapper.toResponseList(employeeRepository.findAll());
     }
@@ -160,6 +184,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND));
         return employeeMapper.toResponse(employee);
+    }
+
+    @Override
+    public EmployeeResponse getMe() {
+        Employee employee = employeeRepository.findById(AuthServiceImpl.getCurrentUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND));
+        return  employeeMapper.toResponse(employee);
     }
 
     private Boolean validatePassword(String password) {

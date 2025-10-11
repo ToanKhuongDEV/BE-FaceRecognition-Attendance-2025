@@ -14,9 +14,11 @@ public interface EmployeeService {
     EmployeeResponse createManager (CreateEmployeeRequest request, MultipartFile file);
     EmployeeResponse deleteEmployee ( String id);
     EmployeeResponse updateEmployee ( String id, UpdateEmployeeRequest request, MultipartFile file);
+    EmployeeResponse updateMyProfile (UpdateEmployeeRequest request, MultipartFile file);
     EmployeeResponse changePassword(ChangePasswordRequest request) ;
 
     List<EmployeeResponse> getAllEmployee();
 
     EmployeeResponse getEmployeeById(String id);
+    EmployeeResponse getMe();
 }
