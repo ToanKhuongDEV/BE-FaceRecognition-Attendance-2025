@@ -24,6 +24,8 @@ public class EmployeeResponse {
 
     private String fullName;
 
+    private String departmentName;
+
     private Gender gender;
 
     private Role role;

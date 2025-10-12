@@ -6,12 +6,14 @@ import com.example.befacerecognitionattendance2025.domain.dto.request.ChangePass
 import com.example.befacerecognitionattendance2025.domain.dto.request.CreateEmployeeRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.request.UpdateEmployeeRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.EmployeeResponse;
+import com.example.befacerecognitionattendance2025.domain.entity.Department;
 import com.example.befacerecognitionattendance2025.domain.entity.Employee;
 import com.example.befacerecognitionattendance2025.domain.mapper.EmployeeMapper;
 import com.example.befacerecognitionattendance2025.exception.DuplicateResourceException;
 import com.example.befacerecognitionattendance2025.exception.InvalidException;
 import com.example.befacerecognitionattendance2025.exception.NotFoundException;
 import com.example.befacerecognitionattendance2025.exception.UnauthorizedException;
+import com.example.befacerecognitionattendance2025.repository.DepartmentRepository;
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
 import com.example.befacerecognitionattendance2025.security.UserPrincipal;
 import com.example.befacerecognitionattendance2025.service.EmployeeService;
@@ -25,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -33,6 +34,7 @@ import java.util.List;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
     private final EmployeeMapper employeeMapper;
     private final UploadFileUtil uploadFileUtil;
     private final PasswordEncoder passwordEncoder;
@@ -51,6 +53,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         ValidateUtil.validateAge(request.getDateBirth());
         ValidateUtil.validateCredentials(request.getUsername(), request.getPassword());
         Employee employee = employeeMapper.toEntity(request);
+        Department  department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow( () -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND));
+        employee.setDepartment(department);
         employee.setRole(Role.STAFF);
         if (imageFile != null && !imageFile.isEmpty()) {
             UploadFileUtil.validateIsImage(imageFile);
@@ -76,9 +81,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 3. Kiểm tra mật khẩu cũ
         if (!passwordEncoder.matches(request.getOldPassword(), employee.getPassword())) {
             throw new UnauthorizedException(ErrorMessage.Auth.ERR_INCORRECT_CREDENTIALS);
-        }
+            }
 
-        if(!this.validatePassword(request.getNewPassword())){
+        if (!ValidateUtil.validatePassword(request.getNewPassword())) {
             throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_PASSWORD);
         }
         // 4. Encode mật khẩu mới và lưu lại
@@ -103,6 +108,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         ValidateUtil.validateCredentials(request.getUsername(), request.getPassword());
 
         Employee manager = employeeMapper.toEntity(request);
+        Department  department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow( () -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND));
+        manager.setDepartment(department);
         manager.setRole(Role.MANAGER);
 
         if (file != null && !file.isEmpty()) {
@@ -139,7 +147,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
        employeeMapper.updateEmployee(request,employee);
-
+        if(request.getDepartmentId() != null){
+            Department  department = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow( () -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND));
+            employee.setDepartment(department);
+        }
         if (file != null && !file.isEmpty()) {
             UploadFileUtil.validateIsImage(file);
             String imageUrl = uploadFileUtil.uploadImage(file);
@@ -164,6 +176,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employeeMapper.updateEmployee(request,employee);
 
+        if(request.getDepartmentId() != null){
+            Department  department = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow( () -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND));
+            employee.setDepartment(department);
+        }
         if (file != null && !file.isEmpty()) {
             UploadFileUtil.validateIsImage(file);
             String imageUrl = uploadFileUtil.uploadImage(file);
@@ -193,15 +210,5 @@ public class EmployeeServiceImpl implements EmployeeService {
         return  employeeMapper.toResponse(employee);
     }
 
-    private Boolean validatePassword(String password) {
-        if (password == null) {
-            return false;
-        }
-        if (password.length() < 8) {
-            return false;
-        }
-        String regex = "^(?=.*[A-Za-z])(?=.*\\d).+$";
-        return password.matches(regex);
-    }
 
 }
