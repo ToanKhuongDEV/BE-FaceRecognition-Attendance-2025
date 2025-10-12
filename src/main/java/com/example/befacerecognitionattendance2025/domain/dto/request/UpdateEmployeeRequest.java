@@ -25,6 +25,8 @@ public class UpdateEmployeeRequest {
     private LocalDate dateBirth;
     private String phoneNumber;
 
+    private String departmentId;
+
     @Email(message = ErrorMessage.Validation.ERR_INVALID_EMAIL)
     private String email;
 }

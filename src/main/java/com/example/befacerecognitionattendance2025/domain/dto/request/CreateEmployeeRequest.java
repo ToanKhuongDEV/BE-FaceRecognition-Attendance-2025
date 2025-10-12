@@ -36,4 +36,7 @@ public class CreateEmployeeRequest {
     @Email(message = ErrorMessage.Validation.ERR_INVALID_EMAIL)
     private String email;
 
+    @NotBlank(message = ErrorMessage.Validation.ERR_NOT_BLANK)
+    private String departmentId;
+
 }

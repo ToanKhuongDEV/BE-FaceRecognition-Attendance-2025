@@ -11,8 +11,10 @@ public class ErrorMessage {
     public static class Validation {
         public static final String ERR_NOT_BLANK = "Không thể trống";
         public static final String ERR_INVALID_EMAIL = "Sai định dạng email";
-        public static final String ERR_INVALID_PASSWORD = "Password phải ≥8 ký tự, có ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt";
-        public static final String ERR_INVALID_USERNAME = "Username phải dài 5-30 ký tự và chỉ chứa chữ, số, dấu gạch dưới hoặc chấm";
+        public static final String ERR_INVALID_PASSWORD =
+                "Password phải có ít nhất 8 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt";
+        public static final String ERR_INVALID_USERNAME =
+                "Username phải dài từ 5–30 ký tự và chỉ chứa chữ cái, số, dấu gạch dưới hoặc dấu chấm";
         public static final String ERR_INVALID_PHONE_NUMBER = "Số điện thoại không hợp lệ";
 
     }

@@ -6,12 +6,21 @@ import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<RestData<?>> handleValidationException(MethodArgumentNotValidException ex) {
+        FieldError fieldError = ex.getBindingResult().getFieldErrors().get(0);
+        String message = fieldError.getDefaultMessage();
+
+        return VsResponseUtil.error(HttpStatus.BAD_REQUEST, message);
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<RestData<?>> handleAccessDeniedException(AccessDeniedException ex) {
