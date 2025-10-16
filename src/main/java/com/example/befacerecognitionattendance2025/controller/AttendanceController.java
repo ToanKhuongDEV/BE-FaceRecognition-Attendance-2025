@@ -9,8 +9,10 @@ import com.example.befacerecognitionattendance2025.domain.dto.response.Attendanc
 import com.example.befacerecognitionattendance2025.service.AttendanceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,6 +28,17 @@ public class AttendanceController {
             @Valid @ModelAttribute AttendanceFilterRequest filterRequest
     ) {
         List<AttendanceSummaryDTO> result = attendanceService.getTotalWorkingHoursByFilter(employeeId, filterRequest);
+        return VsResponseUtil.success(result);
+    }
+
+    @PostMapping(
+            value = UrlConstant.Employee.ME,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<RestData<?>> recordAttendanceByFace(
+            @RequestPart(value = "image", required = false) MultipartFile imageFile
+    ) {
+        AttendanceSummaryDTO result = attendanceService.recordFaceAttendance(imageFile);
         return VsResponseUtil.success(result);
     }
 }

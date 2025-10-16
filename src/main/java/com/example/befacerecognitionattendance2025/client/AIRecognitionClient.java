@@ -18,6 +18,7 @@ public class AIRecognitionClient {
     private final WebClient webClient;
 
     public AIRecognitionClient() {
+        // API của AI server (Python Flask chẳng hạn)
         String baseUrl = "http://localhost:8000/api";
         this.webClient = WebClient.builder()
                 .baseUrl(baseUrl)
@@ -26,9 +27,9 @@ public class AIRecognitionClient {
     }
 
     /**
-     * Gửi ảnh khuôn mặt đến API để trích xuất template (tensor).
+     * Gửi ảnh khuôn mặt lên AI để AI tự xử lý nhận diện và trả về employeeId.
      */
-    public String extractFaceTemplate(MultipartFile image) {
+    public String identifyEmployeeFromImage(MultipartFile image) {
         try {
             MultipartBodyBuilder builder = new MultipartBodyBuilder();
             builder.part("file", new ByteArrayResource(image.getBytes()) {
@@ -38,8 +39,9 @@ public class AIRecognitionClient {
                 }
             }).contentType(MediaType.IMAGE_JPEG);
 
+            // Gửi ảnh lên Flask API /identify-face
             return webClient.post()
-                    .uri("/extract-face")
+                    .uri("/identify-face")
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(BodyInserters.fromMultipartData(builder.build()))
                     .retrieve()
@@ -47,33 +49,11 @@ public class AIRecognitionClient {
                     .block();
 
         } catch (WebClientResponseException e) {
-            log.error("Lỗi khi gọi Flash API extract-face: {}", e.getResponseBodyAsString(), e);
-            throw new RuntimeException("Không thể trích xuất khuôn mặt từ ảnh");
-        } catch (Exception e) {
-            log.error("Lỗi không xác định khi trích xuất khuôn mặt", e);
-            throw new RuntimeException("Lỗi hệ thống khi trích xuất khuôn mặt");
-        }
-    }
-
-    /**
-     * Gửi template khuôn mặt đến API để so sánh và xác định nhân viên.
-     */
-    public String identifyEmployee(String faceTemplate) {
-        try {
-            return webClient.post()
-                    .uri("/compare-face")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue("{\"template\": \"" + faceTemplate + "\"}")
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-
-        } catch (WebClientResponseException e) {
-            log.error("Lỗi khi gọi Flash API compare-face: {}", e.getResponseBodyAsString(), e);
+            log.error("Lỗi khi gọi Flash API identify-face: {}", e.getResponseBodyAsString(), e);
             throw new RuntimeException("Không thể xác định khuôn mặt trong hệ thống");
         } catch (Exception e) {
-            log.error("Lỗi không xác định khi xác minh khuôn mặt", e);
-            throw new RuntimeException("Lỗi hệ thống khi xác minh khuôn mặt");
+            log.error("Lỗi không xác định khi gọi AI nhận diện khuôn mặt", e);
+            throw new RuntimeException("Lỗi hệ thống khi nhận diện khuôn mặt");
         }
     }
 }
