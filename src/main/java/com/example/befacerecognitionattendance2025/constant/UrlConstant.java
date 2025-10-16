@@ -22,4 +22,9 @@ public class UrlConstant {
         public static final String ID = PRE_FIX + "/{id}";
         public static final String ADD_EMPLOYEE = ID + "/department";
     }
+
+    public static class Attendance {
+        private static final String PRE_FIX = "/attendances";
+        public static final String TOTAL_WORK_HOUR = PRE_FIX +"/{employeeId}"+"/summary";
+    }
 }
