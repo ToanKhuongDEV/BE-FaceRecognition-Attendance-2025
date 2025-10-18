@@ -19,15 +19,15 @@ public interface AttendanceRepository extends JpaRepository<Attendance, String> 
      * - Nếu có month + year → lọc theo tháng.
      * - Nếu có day + month + year → lọc theo ngày cụ thể.
      */
-    @Query("""
-        SELECT a
-        FROM Attendance a
-        WHERE a.employee.id = :employeeId
-          AND (:year IS NULL OR FUNCTION('YEAR', a.workDate) = :year)
-          AND (:month IS NULL OR FUNCTION('MONTH', a.workDate) = :month)
-          AND (:day IS NULL OR FUNCTION('DAY', a.workDate) = :day)
-        ORDER BY a.workDate ASC
-    """)
+    @Query(value = """
+        SELECT *
+        FROM attendance a
+        WHERE a.employee_id = :employeeId
+            AND YEAR(a.work_date) = :year
+            AND (:month IS NULL OR MONTH(a.work_date) = :month)
+            AND (:day IS NULL OR DAY(a.work_date) = :day)
+        ORDER BY a.work_date ASC
+    """, nativeQuery = true)
     List<Attendance> findAttendanceDynamic(
             @Param("employeeId") String employeeId,
             @Param("day") Integer day,
@@ -43,6 +43,4 @@ public interface AttendanceRepository extends JpaRepository<Attendance, String> 
         ORDER BY a.checkInTime DESC
         """)
     Optional<Attendance> findLatestUnfinished(@Param("employeeId") String employeeId);
-
-
 }

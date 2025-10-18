@@ -25,6 +25,12 @@ public class UrlConstant {
 
     public static class Attendance {
         private static final String PRE_FIX = "/attendances";
-        public static final String TOTAL_WORK_HOUR = PRE_FIX +"/{employeeId}"+"/summary";
+        public static final String TOTAL_WORK_HOUR = PRE_FIX +"/employee" + "/{employeeId}";
+    }
+
+    public static class Payroll {
+        private static final String PRE_FIX = "/payrolls";
+        public static final String COMMON = PRE_FIX;
+        public static final String GET_BY_DEPARTMENT = PRE_FIX + "/department" + "/{departmentId}";
     }
 }

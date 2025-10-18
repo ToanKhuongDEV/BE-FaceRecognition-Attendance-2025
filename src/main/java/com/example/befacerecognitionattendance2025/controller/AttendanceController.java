@@ -4,7 +4,7 @@ import com.example.befacerecognitionattendance2025.base.RestApiV1;
 import com.example.befacerecognitionattendance2025.base.RestData;
 import com.example.befacerecognitionattendance2025.base.VsResponseUtil;
 import com.example.befacerecognitionattendance2025.constant.UrlConstant;
-import com.example.befacerecognitionattendance2025.domain.dto.request.AttendanceFilterRequest;
+import com.example.befacerecognitionattendance2025.domain.dto.request.TimeFilterRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.AttendanceSummaryDTO;
 import com.example.befacerecognitionattendance2025.service.AttendanceService;
 import jakarta.validation.Valid;
@@ -25,7 +25,7 @@ public class AttendanceController {
     @GetMapping(UrlConstant.Attendance.TOTAL_WORK_HOUR)
     public ResponseEntity<RestData<?>> getAttendanceSummary(
             @PathVariable String employeeId,
-            @Valid @ModelAttribute AttendanceFilterRequest filterRequest
+            @Valid @ModelAttribute TimeFilterRequest filterRequest
     ) {
         List<AttendanceSummaryDTO> result = attendanceService.getTotalWorkingHoursByFilter(employeeId, filterRequest);
         return VsResponseUtil.success(result);

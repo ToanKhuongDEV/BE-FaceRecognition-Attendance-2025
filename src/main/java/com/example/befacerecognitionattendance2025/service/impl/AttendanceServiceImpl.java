@@ -2,7 +2,7 @@ package com.example.befacerecognitionattendance2025.service.impl;
 
 import com.example.befacerecognitionattendance2025.client.AIRecognitionClient;
 import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
-import com.example.befacerecognitionattendance2025.domain.dto.request.AttendanceFilterRequest;
+import com.example.befacerecognitionattendance2025.domain.dto.request.TimeFilterRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.AttendanceSummaryDTO;
 import com.example.befacerecognitionattendance2025.domain.entity.Attendance;
 import com.example.befacerecognitionattendance2025.domain.entity.Employee;
@@ -32,8 +32,11 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AttendanceSummaryDTO> getTotalWorkingHoursByFilter(String employeeId, AttendanceFilterRequest request) {
-        List<Attendance> attendances = attendanceRepository.findAttendanceDynamic(employeeId, request.getYear(), request.getMonth(), request.getDay());
+    public List<AttendanceSummaryDTO> getTotalWorkingHoursByFilter(String employeeId, TimeFilterRequest request) {
+        if(employeeRepository.findById(employeeId).isEmpty()) {
+            throw new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND);
+        }
+        List<Attendance> attendances = attendanceRepository.findAttendanceDynamic(employeeId, request.getDay(), request.getMonth(), request.getYear());
         return attendanceMapper.toSummaryDTOList(attendances);
     }
 
