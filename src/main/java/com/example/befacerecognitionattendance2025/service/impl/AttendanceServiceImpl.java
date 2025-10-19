@@ -12,7 +12,9 @@ import com.example.befacerecognitionattendance2025.exception.NotFoundException;
 import com.example.befacerecognitionattendance2025.repository.AttendanceRepository;
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
 import com.example.befacerecognitionattendance2025.service.AttendanceService;
+import com.example.befacerecognitionattendance2025.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +32,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final AttendanceMapper attendanceMapper;
     private final AIRecognitionClient aiRecognitionClient;
     private final EmployeeRepository employeeRepository;
+    private final AuthService  authService;
 
     @Override
     public Double getTotalWorkingHoursDynamic(String employeeId, TimeFilterRequest time) {
@@ -45,6 +48,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
         return attendanceRepository.getTotalWorkingHoursDynamic(employeeId, time.getDay(), time.getMonth(), time.getYear());
     }
+
     @Override
     @Transactional(readOnly = true)
     public List<AttendanceSummaryDTO> getWorkingHoursByFilter(String employeeId, TimeFilterRequest request) {
@@ -91,6 +95,16 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         Attendance saved = attendanceRepository.save(attendance);
         return attendanceMapper.toSummaryDTO(saved);
+    }
+
+    @Override
+    public List<AttendanceSummaryDTO> getMyWorkingHoursByFilter(TimeFilterRequest request) {
+        String employeeId = authService.getCurrentUserId();
+        if(employeeRepository.findById(employeeId).isEmpty()) {
+            throw new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND);
+        }
+        List<Attendance> attendances = attendanceRepository.findAttendanceDynamic(employeeId, request.getDay(), request.getMonth(), request.getYear());
+        return attendanceMapper.toSummaryDTOList(attendances);
     }
 
 }

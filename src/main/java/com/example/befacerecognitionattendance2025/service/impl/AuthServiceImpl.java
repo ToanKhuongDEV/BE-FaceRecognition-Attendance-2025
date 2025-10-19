@@ -110,7 +110,8 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
-    public static String getCurrentUserId() {
+    @Override
+    public String getCurrentUserId() {
         var authentication = org.springframework.security.core.context.SecurityContextHolder
                 .getContext().getAuthentication();
 

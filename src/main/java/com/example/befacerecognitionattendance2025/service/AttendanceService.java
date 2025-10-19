@@ -23,6 +23,7 @@ public interface AttendanceService {
      */
     AttendanceSummaryDTO recordFaceAttendance(MultipartFile faceImage);
 
+    List<AttendanceSummaryDTO> getMyWorkingHoursByFilter(TimeFilterRequest filterRequest);
     Double getTotalWorkingHoursDynamic(String employeeId, TimeFilterRequest filterRequest);
 
 }

@@ -11,6 +11,7 @@ import com.example.befacerecognitionattendance2025.exception.NotFoundException;
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
 import com.example.befacerecognitionattendance2025.repository.PayrollRepository;
 import com.example.befacerecognitionattendance2025.service.AttendanceService;
+import com.example.befacerecognitionattendance2025.service.AuthService;
 import com.example.befacerecognitionattendance2025.service.PayrollService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class PayrollServiceImpl implements PayrollService {
     private final PayrollMapper payrollMapper;
     private final EmployeeRepository employeeRepository;
     private final AttendanceService attendanceService;
+    private final AuthService authService;
 
 
     @Override
@@ -86,7 +88,7 @@ public class PayrollServiceImpl implements PayrollService {
     @Override
     @Transactional(readOnly = true)
     public PayrollResponse getMyPayroll(TimeFilterRequest time) {
-        String employeeId = AuthServiceImpl.getCurrentUserId();
+        String employeeId = authService.getCurrentUserId();
         Payroll payroll =  payrollRepository.findByEmployeeAndMonthAndYearFetch(employeeId, time.getMonth(), time.getYear())
                 .orElseThrow(()-> new NotFoundException(ErrorMessage.Payroll.ERR_NOT_FOUND));
         return payrollMapper.toResponse(payroll);
