@@ -41,4 +41,12 @@ public class AttendanceController {
         AttendanceSummaryDTO result = attendanceService.recordFaceAttendance(imageFile);
         return VsResponseUtil.success(result);
     }
+
+    @GetMapping(UrlConstant.Attendance.TOTAL_WORK_ME)
+    public ResponseEntity<RestData<?>> getAttendanceSummary(
+            @Valid @ModelAttribute TimeFilterRequest filterRequest
+    ){
+        List<AttendanceSummaryDTO> result = attendanceService.getMyWorkingHoursByFilter(filterRequest);
+        return VsResponseUtil.success(result);
+    }
 }
