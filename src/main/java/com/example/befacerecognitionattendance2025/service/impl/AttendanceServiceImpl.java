@@ -13,6 +13,7 @@ import com.example.befacerecognitionattendance2025.repository.AttendanceReposito
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
 import com.example.befacerecognitionattendance2025.service.AttendanceService;
 import com.example.befacerecognitionattendance2025.service.AuthService;
+import com.example.befacerecognitionattendance2025.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -40,12 +41,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         if(employeeRepository.findById(employeeId).isEmpty()){
             throw new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND);
         }
-        if (time.getDay() != null && (time.getDay() < 1 || time.getDay() > 31)) {
-            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_DATE);
-        }
-        if (time.getMonth() != null && (time.getMonth() < 1 || time.getMonth() > 12)) {
-            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_DATE);
-        }
+        ValidateUtil.validateDate(time);
         return attendanceRepository.getTotalWorkingHoursDynamic(employeeId, time.getDay(), time.getMonth(), time.getYear());
     }
 
@@ -55,6 +51,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         if(employeeRepository.findById(employeeId).isEmpty()) {
             throw new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND);
         }
+        ValidateUtil.validateDate(request);
         List<Attendance> attendances = attendanceRepository.findAttendanceDynamic(employeeId, request.getDay(), request.getMonth(), request.getYear());
         return attendanceMapper.toSummaryDTOList(attendances);
     }
@@ -99,6 +96,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public List<AttendanceSummaryDTO> getMyWorkingHoursByFilter(TimeFilterRequest request) {
+        ValidateUtil.validateDate(request);
         String employeeId = authService.getCurrentUserId();
         if(employeeRepository.findById(employeeId).isEmpty()) {
             throw new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND);

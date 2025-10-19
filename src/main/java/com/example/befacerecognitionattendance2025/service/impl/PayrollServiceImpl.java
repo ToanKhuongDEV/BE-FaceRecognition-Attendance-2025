@@ -13,6 +13,7 @@ import com.example.befacerecognitionattendance2025.repository.PayrollRepository;
 import com.example.befacerecognitionattendance2025.service.AttendanceService;
 import com.example.befacerecognitionattendance2025.service.AuthService;
 import com.example.befacerecognitionattendance2025.service.PayrollService;
+import com.example.befacerecognitionattendance2025.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,7 @@ public class PayrollServiceImpl implements PayrollService {
     @Override
     @Transactional(readOnly = true)
     public List<PayrollSummaryResponse> getPayrollByDepartmentId(String departmentId, TimeFilterRequest time) {
+        ValidateUtil.validateDate(time);
         List<Payroll> responses=  payrollRepository.findPayrollByDepartmentAndMonth(time.getMonth(), time.getYear(), departmentId);
         return payrollMapper.toSummaryResponseList(responses);
     }
@@ -44,6 +46,7 @@ public class PayrollServiceImpl implements PayrollService {
     @Override
     @Transactional
     public List<PayrollSummaryResponse> createPayroll(TimeFilterRequest time) {
+        ValidateUtil.validateDate(time);
         Integer month = time.getMonth();
         Integer year = time.getYear();
 
@@ -88,6 +91,7 @@ public class PayrollServiceImpl implements PayrollService {
     @Override
     @Transactional(readOnly = true)
     public PayrollResponse getMyPayroll(TimeFilterRequest time) {
+        ValidateUtil.validateDate(time);
         String employeeId = authService.getCurrentUserId();
         Payroll payroll =  payrollRepository.findByEmployeeAndMonthAndYearFetch(employeeId, time.getMonth(), time.getYear())
                 .orElseThrow(()-> new NotFoundException(ErrorMessage.Payroll.ERR_NOT_FOUND));
