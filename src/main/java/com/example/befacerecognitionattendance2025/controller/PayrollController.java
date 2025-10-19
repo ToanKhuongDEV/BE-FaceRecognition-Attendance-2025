@@ -4,6 +4,7 @@ import com.example.befacerecognitionattendance2025.base.RestApiV1;
 import com.example.befacerecognitionattendance2025.base.RestData;
 import com.example.befacerecognitionattendance2025.base.VsResponseUtil;
 import com.example.befacerecognitionattendance2025.constant.UrlConstant;
+import com.example.befacerecognitionattendance2025.domain.dto.request.PayrollEntryRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.request.TimeFilterRequest;
 import com.example.befacerecognitionattendance2025.service.PayrollService;
 import jakarta.validation.Valid;
@@ -11,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RestApiV1
 @RequiredArgsConstructor
@@ -43,5 +41,15 @@ public class PayrollController {
             @Valid @ModelAttribute TimeFilterRequest time
     ) {
         return VsResponseUtil.success(payrollService.getMyPayroll(time));
+    }
+
+    @PreAuthorize("hasAuthority('MANAGER')")
+    @PutMapping(UrlConstant.Payroll.UPDATE_BONUS_DEDUCTION)
+    public ResponseEntity<RestData<?>> updateBonusDeduction(
+            @PathVariable String employeeId,
+            @RequestBody @Valid PayrollEntryRequest request,
+            @Valid @ModelAttribute TimeFilterRequest time
+    ){
+        return VsResponseUtil.success(payrollService.updateBonusDeduction(employeeId,request,time));
     }
 }

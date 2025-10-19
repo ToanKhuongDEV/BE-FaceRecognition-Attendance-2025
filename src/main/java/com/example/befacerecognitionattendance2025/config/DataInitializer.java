@@ -42,21 +42,21 @@ public class DataInitializer {
         Department hr = departmentRepository.findByName("Phòng Nhân Sự")
                 .orElseGet(() -> departmentRepository.save(Department.builder()
                         .name("Phòng Nhân Sự")
-                        .baseSalary(10000000.0)
+                        .baseSalary(200.0)
                         .description("Phụ trách công tác nhân sự và tiền lương")
                         .build()));
 
         Department tech = departmentRepository.findByName("Phòng Kỹ Thuật")
                 .orElseGet(() -> departmentRepository.save(Department.builder()
                         .name("Phòng Kỹ Thuật")
-                        .baseSalary(15000000.0)
+                        .baseSalary(150.0)
                         .description("Phát triển và bảo trì hệ thống")
                         .build()));
 
         Department sales = departmentRepository.findByName("Phòng Kinh Doanh")
                 .orElseGet(() -> departmentRepository.save(Department.builder()
                         .name("Phòng Kinh Doanh")
-                        .baseSalary(12000000.0)
+                        .baseSalary(120.0)
                         .description("Bán hàng và chăm sóc khách hàng")
                         .build()));
 

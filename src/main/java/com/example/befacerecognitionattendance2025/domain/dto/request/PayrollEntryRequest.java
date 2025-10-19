@@ -7,12 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PayrollRequest {
-
-    private String employeeId;
-    private Integer month;
-    private Integer year;
-    private Double totalHours;
+public class PayrollEntryRequest {
     private Double bonus;
     private Double deduction;
 }
