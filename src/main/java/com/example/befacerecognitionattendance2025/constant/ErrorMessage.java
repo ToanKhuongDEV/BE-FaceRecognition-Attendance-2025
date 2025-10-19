@@ -16,6 +16,7 @@ public class ErrorMessage {
         public static final String ERR_INVALID_USERNAME =
                 "Username phải dài từ 5–30 ký tự và chỉ chứa chữ cái, số, dấu gạch dưới hoặc dấu chấm";
         public static final String ERR_INVALID_PHONE_NUMBER = "Số điện thoại không hợp lệ";
+        public static final String ERR_INVALID_DATE = "Dữ liệu ngày/tháng/năm không hợp lệ";
 
     }
 
@@ -39,4 +40,7 @@ public class ErrorMessage {
         public static final String ERR_NOT_FOUND = "Không tìm thấy phòng ban";
     }
 
+    public static class Payroll{
+        public static final String ERR_NOT_FOUND = "không tìm thấy bảng lương của nhân viên này trong năm , tháng này";
+    }
 }

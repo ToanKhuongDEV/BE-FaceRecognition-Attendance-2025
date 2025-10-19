@@ -12,7 +12,7 @@ public interface AuthService {
 
     LoginResponse refreshToken(RefreshTokenRequest  request) ;
 
-
     EmployeeResponse verifyPassword(String password);
 
+    String getCurrentUserId();
 }

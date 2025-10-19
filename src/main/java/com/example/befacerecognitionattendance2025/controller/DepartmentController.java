@@ -9,6 +9,7 @@ import com.example.befacerecognitionattendance2025.domain.dto.request.CreateDepa
 import com.example.befacerecognitionattendance2025.domain.dto.request.UpdateDepartmentRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.DepartmentResponse;
 import com.example.befacerecognitionattendance2025.service.DepartmentService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ public class DepartmentController {
 
     private final DepartmentService departmentService;
 
+    @Operation(summary = "tạo phòng ban", description = "yêu cầu quyền manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @PostMapping(UrlConstant.Department.COMMON)
     public ResponseEntity<RestData<?>> createDepartment(
@@ -30,6 +32,7 @@ public class DepartmentController {
         return VsResponseUtil.success(response);
     }
 
+    @Operation(summary = "cập nhật phònd ban", description = "yêu cầu quyền manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @PutMapping(UrlConstant.Department.ID)
     public ResponseEntity<RestData<?>> updateDepartment(
@@ -39,6 +42,7 @@ public class DepartmentController {
         return VsResponseUtil.success(response);
     }
 
+    @Operation(summary = "xóa phònd ban theo id", description = "yêu cầu quyền manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @DeleteMapping(UrlConstant.Department.ID)
     public ResponseEntity<RestData<?>> deleteDepartment(@PathVariable String id) {
@@ -46,12 +50,15 @@ public class DepartmentController {
         return VsResponseUtil.success(response);
     }
 
+    @Operation(summary = "lấy phònd ban theo id", description = "yêu cầu quyền manager")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping(UrlConstant.Department.ID)
     public ResponseEntity<RestData<?>> getDepartmentById(@PathVariable String id) {
         DepartmentResponse response = departmentService.findDepartmentById(id);
         return VsResponseUtil.success(response);
     }
 
+    @Operation(summary = "thêm nhân viên vào phòng ban", description = "yêu cầu quyền manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @PostMapping(UrlConstant.Department.ADD_EMPLOYEE)
     public ResponseEntity<RestData<?>> addEmployeeToDepartment(@PathVariable String id, @RequestBody @Valid AddEmployeesRequest request) {
@@ -59,6 +66,7 @@ public class DepartmentController {
         return VsResponseUtil.success(response);
     }
 
+    @Operation(summary = "lấy tất cả các phònd ban")
     @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping(UrlConstant.Department.COMMON)
     public ResponseEntity<RestData<?>> getAllDepartments() {

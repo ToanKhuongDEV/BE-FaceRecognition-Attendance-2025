@@ -1,6 +1,7 @@
 package com.example.befacerecognitionattendance2025.util;
 
 import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
+import com.example.befacerecognitionattendance2025.domain.dto.request.TimeFilterRequest;
 import com.example.befacerecognitionattendance2025.exception.InvalidException;
 
 import java.time.LocalDate;
@@ -43,4 +44,18 @@ public class ValidateUtil {
     public static boolean validatePassword(String password) {
         return password != null && password.matches(PASSWORD_REGEX);
     }
+
+    public static void validateDate(TimeFilterRequest time) {
+        if (time.getDay() != null && (time.getDay() < 1 || time.getDay() > 31)) {
+            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_DATE);
+        }
+        if (time.getMonth() != null && (time.getMonth() < 1 || time.getMonth() > 12)) {
+            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_DATE);
+        }
+        if (time.getYear() != null && (time.getYear() < 1 || time.getYear() >LocalDate.now().getYear() )) {
+            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_DATE);
+
+        }
+    }
+
 }

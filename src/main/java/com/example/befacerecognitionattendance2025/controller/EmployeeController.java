@@ -8,6 +8,7 @@ import com.example.befacerecognitionattendance2025.domain.dto.request.ChangePass
 import com.example.befacerecognitionattendance2025.domain.dto.request.CreateEmployeeRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.request.UpdateEmployeeRequest;
 import com.example.befacerecognitionattendance2025.service.EmployeeService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ public class EmployeeController {
 
     private final EmployeeService service;
 
+    @Operation(summary = "tạo nhân viên", description = "yêu cầu quyền manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @PostMapping(
             value = UrlConstant.Employee.COMMON,
@@ -33,6 +35,7 @@ public class EmployeeController {
         return VsResponseUtil.success(service.createEmployee(request, imageFile));
     }
 
+    @Operation(summary = "tạo quản lý", description = "yêu cầu quyền manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @PostMapping(
             value = UrlConstant.Employee.CREATE_MANAGER,
@@ -45,11 +48,13 @@ public class EmployeeController {
         return VsResponseUtil.success(service.createManager(request, imageFile));
     }
 
+    @Operation(summary = "đổi mật khẩu của bản thân")
     @PostMapping(UrlConstant.Employee.CHANGE_PASSWORD)
     public ResponseEntity<RestData<?>> changePassword(@Valid @RequestBody ChangePasswordRequest request ) {
         return VsResponseUtil.success(service.changePassword(request));
     }
 
+    @Operation(summary = "cập nhật nhân viên theo id", description = "yêu cầu quyền manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @PatchMapping(
             value = UrlConstant.Employee.ID,
@@ -63,6 +68,7 @@ public class EmployeeController {
         return VsResponseUtil.success(service.updateEmployee(id, request, imageFile));
     }
 
+    @Operation(summary = "cập nhật thông tin của bản thân")
     @PatchMapping(
             value = UrlConstant.Employee.ME,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -73,24 +79,27 @@ public class EmployeeController {
     ) {
         return VsResponseUtil.success(service.updateMyProfile(request, imageFile));
     }
-
+    @Operation(summary = "lấy thông tin của bản thân")
     @GetMapping(UrlConstant.Employee.ME)
     public ResponseEntity<RestData<?>> getMyProfile(){
         return VsResponseUtil.success(service.getMe());
     }
 
+    @Operation(summary = "xóa nhân viên theo id", description = "yêu cầu quyền manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @DeleteMapping(UrlConstant.Employee.ID)
     public ResponseEntity<RestData<?>> deleteEmployee(@PathVariable("id") String id) {
         return VsResponseUtil.success(service.deleteEmployee(id));
     }
 
+    @Operation(summary = "lấy tất cả nhân viên", description = "yêu cầu quyền manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping(UrlConstant.Employee.COMMON)
     public ResponseEntity<RestData<?>> getAllEmployees() {
         return VsResponseUtil.success(service.getAllEmployee());
     }
 
+    @Operation(summary = "lấy thông tin nhân viên theo id", description = "yêu cầu quyền manager")
     @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping(UrlConstant.Employee.ID)
     public ResponseEntity<RestData<?>> getEmployeeById(@PathVariable("id") String id) {

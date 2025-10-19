@@ -16,6 +16,7 @@ import com.example.befacerecognitionattendance2025.exception.UnauthorizedExcepti
 import com.example.befacerecognitionattendance2025.repository.DepartmentRepository;
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
 import com.example.befacerecognitionattendance2025.security.UserPrincipal;
+import com.example.befacerecognitionattendance2025.service.AuthService;
 import com.example.befacerecognitionattendance2025.service.EmployeeService;
 import com.example.befacerecognitionattendance2025.util.UploadFileUtil;
 import com.example.befacerecognitionattendance2025.util.ValidateUtil;
@@ -38,6 +39,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeMapper employeeMapper;
     private final UploadFileUtil uploadFileUtil;
     private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
     @Override
     @Transactional
@@ -165,7 +167,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponse updateMyProfile(UpdateEmployeeRequest request, MultipartFile file) {
-        Employee employee = employeeRepository.findById(AuthServiceImpl.getCurrentUserId())
+        Employee employee = employeeRepository.findById(authService.getCurrentUserId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND));
 
         if (request.getEmail() != null && !request.getEmail().equals(employee.getEmail())) {
@@ -205,7 +207,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse getMe() {
-        Employee employee = employeeRepository.findById(AuthServiceImpl.getCurrentUserId())
+        Employee employee = employeeRepository.findById(authService.getCurrentUserId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND));
         return  employeeMapper.toResponse(employee);
     }

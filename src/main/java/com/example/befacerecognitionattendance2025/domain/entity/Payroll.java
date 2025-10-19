@@ -28,11 +28,11 @@ public class Payroll {
 
     private Integer month;
     private Integer year;
-    private Double totalHours;
-    private Double baseSalary;
-    private Double bonus;
-    private Double deduction;
-    private Double finalSalary;
+    private Double totalHours= 0.0;
+    private Double baseSalary= 0.0;
+    private Double bonus= 0.0;
+    private Double deduction= 0.0;
+    private Double finalSalary= 0.0;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

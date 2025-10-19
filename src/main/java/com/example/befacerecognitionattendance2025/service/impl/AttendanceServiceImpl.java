@@ -2,16 +2,20 @@ package com.example.befacerecognitionattendance2025.service.impl;
 
 import com.example.befacerecognitionattendance2025.client.AIRecognitionClient;
 import com.example.befacerecognitionattendance2025.constant.ErrorMessage;
-import com.example.befacerecognitionattendance2025.domain.dto.request.AttendanceFilterRequest;
+import com.example.befacerecognitionattendance2025.domain.dto.request.TimeFilterRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.AttendanceSummaryDTO;
 import com.example.befacerecognitionattendance2025.domain.entity.Attendance;
 import com.example.befacerecognitionattendance2025.domain.entity.Employee;
 import com.example.befacerecognitionattendance2025.domain.mapper.AttendanceMapper;
+import com.example.befacerecognitionattendance2025.exception.InvalidException;
 import com.example.befacerecognitionattendance2025.exception.NotFoundException;
 import com.example.befacerecognitionattendance2025.repository.AttendanceRepository;
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
 import com.example.befacerecognitionattendance2025.service.AttendanceService;
+import com.example.befacerecognitionattendance2025.service.AuthService;
+import com.example.befacerecognitionattendance2025.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,11 +33,26 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final AttendanceMapper attendanceMapper;
     private final AIRecognitionClient aiRecognitionClient;
     private final EmployeeRepository employeeRepository;
+    private final AuthService  authService;
+
+    @Override
+    public Double getTotalWorkingHoursDynamic(String employeeId, TimeFilterRequest time) {
+
+        if(employeeRepository.findById(employeeId).isEmpty()){
+            throw new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND);
+        }
+        ValidateUtil.validateDate(time);
+        return attendanceRepository.getTotalWorkingHoursDynamic(employeeId, time.getDay(), time.getMonth(), time.getYear());
+    }
 
     @Override
     @Transactional(readOnly = true)
-    public List<AttendanceSummaryDTO> getTotalWorkingHoursByFilter(String employeeId, AttendanceFilterRequest request) {
-        List<Attendance> attendances = attendanceRepository.findAttendanceDynamic(employeeId, request.getYear(), request.getMonth(), request.getDay());
+    public List<AttendanceSummaryDTO> getWorkingHoursByFilter(String employeeId, TimeFilterRequest request) {
+        if(employeeRepository.findById(employeeId).isEmpty()) {
+            throw new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND);
+        }
+        ValidateUtil.validateDate(request);
+        List<Attendance> attendances = attendanceRepository.findAttendanceDynamic(employeeId, request.getDay(), request.getMonth(), request.getYear());
         return attendanceMapper.toSummaryDTOList(attendances);
     }
 
@@ -73,6 +92,17 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         Attendance saved = attendanceRepository.save(attendance);
         return attendanceMapper.toSummaryDTO(saved);
+    }
+
+    @Override
+    public List<AttendanceSummaryDTO> getMyWorkingHoursByFilter(TimeFilterRequest request) {
+        ValidateUtil.validateDate(request);
+        String employeeId = authService.getCurrentUserId();
+        if(employeeRepository.findById(employeeId).isEmpty()) {
+            throw new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND);
+        }
+        List<Attendance> attendances = attendanceRepository.findAttendanceDynamic(employeeId, request.getDay(), request.getMonth(), request.getYear());
+        return attendanceMapper.toSummaryDTOList(attendances);
     }
 
 }
