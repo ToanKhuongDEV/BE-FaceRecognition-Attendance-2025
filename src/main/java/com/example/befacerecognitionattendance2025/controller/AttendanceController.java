@@ -7,10 +7,12 @@ import com.example.befacerecognitionattendance2025.constant.UrlConstant;
 import com.example.befacerecognitionattendance2025.domain.dto.request.TimeFilterRequest;
 import com.example.befacerecognitionattendance2025.domain.dto.response.AttendanceSummaryDTO;
 import com.example.befacerecognitionattendance2025.service.AttendanceService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +24,8 @@ public class AttendanceController {
 
     private final AttendanceService attendanceService;
 
+    @Operation(summary = "Lấy công điểm của nhân viên theo thời gian", description = "yêu cầu quyền manager")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping(UrlConstant.Attendance.TOTAL_WORK_HOUR)
     public ResponseEntity<RestData<?>> getAttendanceSummary(
             @PathVariable String employeeId,
@@ -31,6 +35,7 @@ public class AttendanceController {
         return VsResponseUtil.success(result);
     }
 
+    @Operation(summary = "chấm công")
     @PostMapping(
             value = UrlConstant.Employee.ME,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -42,6 +47,7 @@ public class AttendanceController {
         return VsResponseUtil.success(result);
     }
 
+    @Operation(summary = "xem công điểm của bản thâm theo thời gian")
     @GetMapping(UrlConstant.Attendance.TOTAL_WORK_ME)
     public ResponseEntity<RestData<?>> getAttendanceSummary(
             @Valid @ModelAttribute TimeFilterRequest filterRequest
