@@ -7,6 +7,7 @@ import com.example.befacerecognitionattendance2025.domain.dto.response.Attendanc
 import com.example.befacerecognitionattendance2025.domain.entity.Attendance;
 import com.example.befacerecognitionattendance2025.domain.entity.Employee;
 import com.example.befacerecognitionattendance2025.domain.mapper.AttendanceMapper;
+import com.example.befacerecognitionattendance2025.exception.InvalidException;
 import com.example.befacerecognitionattendance2025.exception.NotFoundException;
 import com.example.befacerecognitionattendance2025.repository.AttendanceRepository;
 import com.example.befacerecognitionattendance2025.repository.EmployeeRepository;
@@ -31,8 +32,22 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final EmployeeRepository employeeRepository;
 
     @Override
+    public Double getTotalWorkingHoursDynamic(String employeeId, TimeFilterRequest time) {
+
+        if(employeeRepository.findById(employeeId).isEmpty()){
+            throw new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND);
+        }
+        if (time.getDay() != null && (time.getDay() < 1 || time.getDay() > 31)) {
+            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_DATE);
+        }
+        if (time.getMonth() != null && (time.getMonth() < 1 || time.getMonth() > 12)) {
+            throw new InvalidException(ErrorMessage.Validation.ERR_INVALID_DATE);
+        }
+        return attendanceRepository.getTotalWorkingHoursDynamic(employeeId, time.getDay(), time.getMonth(), time.getYear());
+    }
+    @Override
     @Transactional(readOnly = true)
-    public List<AttendanceSummaryDTO> getTotalWorkingHoursByFilter(String employeeId, TimeFilterRequest request) {
+    public List<AttendanceSummaryDTO> getWorkingHoursByFilter(String employeeId, TimeFilterRequest request) {
         if(employeeRepository.findById(employeeId).isEmpty()) {
             throw new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND);
         }

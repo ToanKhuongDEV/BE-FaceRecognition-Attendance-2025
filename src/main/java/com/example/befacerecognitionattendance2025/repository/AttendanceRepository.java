@@ -43,4 +43,21 @@ public interface AttendanceRepository extends JpaRepository<Attendance, String> 
         ORDER BY a.checkInTime DESC
         """)
     Optional<Attendance> findLatestUnfinished(@Param("employeeId") String employeeId);
+
+    @Query(value = """
+        SELECT COALESCE(SUM(a.total_hours), 0)
+        FROM attendance a
+        WHERE a.employee_id = :employeeId
+          AND YEAR(a.work_date) = :year
+          AND MONTH(a.work_date) = :month
+          AND (:day IS NULL OR DAY(a.work_date) = :day)
+    """, nativeQuery = true)
+    Double getTotalWorkingHoursDynamic(
+            @Param("employeeId") String employeeId,
+            @Param("day") Integer day,
+            @Param("month") Integer month,
+            @Param("year") Integer year
+    );
+
+
 }

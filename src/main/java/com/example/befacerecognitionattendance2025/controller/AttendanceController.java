@@ -27,7 +27,7 @@ public class AttendanceController {
             @PathVariable String employeeId,
             @Valid @ModelAttribute TimeFilterRequest filterRequest
     ) {
-        List<AttendanceSummaryDTO> result = attendanceService.getTotalWorkingHoursByFilter(employeeId, filterRequest);
+        List<AttendanceSummaryDTO> result = attendanceService.getWorkingHoursByFilter(employeeId, filterRequest);
         return VsResponseUtil.success(result);
     }
 
