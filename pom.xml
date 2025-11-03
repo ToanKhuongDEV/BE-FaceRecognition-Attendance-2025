@@ -14,6 +14,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>BE-FaceRecognition-Attendance-2025</name>
     <description>BE-FaceRecognition-Attendance-2025</description>
+    <packaging>war</packaging>
 
     <properties>
         <java.version>17</java.version>
@@ -33,8 +34,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
         </dependency>
 
         <dependency>

@@ -65,6 +65,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setAvatar(imageUrl);
         }
         employee.setPassword(passwordEncoder.encode(request.getPassword()));
+        Integer maxCode = employeeRepository.findMaxEmployeeCode();
+        employee.setEmployeeCode(maxCode + 1);
         employeeRepository.save(employee);
         return employeeMapper.toResponse(employee);
     }
@@ -122,6 +124,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         manager.setPassword(passwordEncoder.encode(request.getPassword()));
+        Integer maxCode = employeeRepository.findMaxEmployeeCode();
+        manager.setEmployeeCode(maxCode + 1);
+
         employeeRepository.save(manager);
         return employeeMapper.toResponse(manager);
     }

@@ -19,4 +19,7 @@ public interface EmployeeRepository extends JpaRepository<Employee,String> {
     @Modifying
     @Query("UPDATE Employee e SET e.lastLogin = :lastLogin WHERE e.id = :employeeId")
     void updateLastLogin(@Param("employeeId") String employeeId, @Param("lastLogin") LocalDateTime lastLogin);
+
+    @Query("SELECT COALESCE(MAX(e.employeeCode), 0) FROM Employee e")
+    Integer findMaxEmployeeCode();
 }
