@@ -4,11 +4,11 @@ WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# run stage
-FROM openjdk:17-jdk
+# run stage – chọn image được duy trì
+FROM eclipse-temurin:17-jdk AS runtime
 WORKDIR /app
 
-COPY --from=build /app/target/BE-FaceRecognition-Attendance-2025-0.0.1-SNAPSHOT.war BE-FaceRecognition-Attendance-2025.war
+COPY --from=build /app/target/BE‑FaceRecognition‑Attendance‑2025‑0.0.1‑SNAPSHOT.war BE‑FaceRecognition‑Attendance‑2025.war
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "BE-FaceRecognition-Attendance-2025.war"]
+ENTRYPOINT ["java", "-jar", "BE‑FaceRecognition‑Attendance‑2025.war"]
