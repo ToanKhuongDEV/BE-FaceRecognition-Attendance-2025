@@ -24,8 +24,8 @@ public class FaceData {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String faceTemplate;
+    @Column(nullable = false, columnDefinition = "JSON")
+    private String encoding;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
