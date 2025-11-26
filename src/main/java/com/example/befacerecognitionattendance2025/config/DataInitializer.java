@@ -4,6 +4,7 @@ import com.example.befacerecognitionattendance2025.constant.Gender;
 import com.example.befacerecognitionattendance2025.constant.Role;
 import com.example.befacerecognitionattendance2025.domain.entity.*;
 import com.example.befacerecognitionattendance2025.repository.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +15,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 @Configuration
 @RequiredArgsConstructor
 public class DataInitializer {
@@ -35,8 +35,9 @@ public class DataInitializer {
         };
     }
 
-    private void seedData() {
+    private void seedData() throws Exception {
         Random random = new Random();
+        ObjectMapper mapper = new ObjectMapper();
 
         // 1. Departments
         Department hr = departmentRepository.findByName("Phòng Nhân Sự")
@@ -101,9 +102,15 @@ public class DataInitializer {
         // 3. FaceData
         for (Employee e : employees) {
             if (faceDataRepository.countByEmployee(e) == 0) {
+                float[] encodingArray = new float[128];
+                for (int i = 0; i < 128; i++) {
+                    encodingArray[i] = random.nextFloat();
+                }
+                String jsonEncoding = mapper.writeValueAsString(encodingArray);
+
                 FaceData face = FaceData.builder()
                         .employee(e)
-                        .encoding(UUID.randomUUID().toString())
+                        .encoding(jsonEncoding)
                         .build();
                 faceDataRepository.save(face);
             }
