@@ -49,7 +49,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, String> 
         FROM attendance a
         WHERE a.employee_id = :employeeId
           AND YEAR(a.work_date) = :year
-          AND MONTH(a.work_date) = :month
+          AND (:month IS NULL OR MONTH(a.work_date) = :month)
           AND (:day IS NULL OR DAY(a.work_date) = :day)
     """, nativeQuery = true)
     Double getTotalWorkingHoursDynamic(
