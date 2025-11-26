@@ -103,7 +103,7 @@ public class DataInitializer {
             if (faceDataRepository.countByEmployee(e) == 0) {
                 FaceData face = FaceData.builder()
                         .employee(e)
-                        .faceTemplate(UUID.randomUUID().toString())
+                        .encoding(UUID.randomUUID().toString())
                         .build();
                 faceDataRepository.save(face);
             }
