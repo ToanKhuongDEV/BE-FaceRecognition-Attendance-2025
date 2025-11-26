@@ -32,6 +32,7 @@ public class UrlConstant {
     public static class Payroll {
         private static final String PRE_FIX = "/payrolls";
         public static final String COMMON = PRE_FIX;
+        public static final String EXPORT = PRE_FIX + "/export-salary";
         public static final String ME = PRE_FIX + "/me";
         public static final String GET_BY_DEPARTMENT = PRE_FIX + "/department" + "/{departmentId}";
         public static final String UPDATE_BONUS_DEDUCTION = PRE_FIX + "/employee" + "/{employeeId}";
