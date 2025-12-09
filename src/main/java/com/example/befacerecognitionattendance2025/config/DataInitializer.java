@@ -23,7 +23,6 @@ public class DataInitializer {
    private final PasswordEncoder passwordEncoder;
    private final DepartmentRepository departmentRepository;
    private final AttendanceRepository attendanceRepository;
-   private final FaceDataRepository faceDataRepository;
 
     @Bean
     public CommandLineRunner initData() {
@@ -37,7 +36,6 @@ public class DataInitializer {
 
     private void seedData() throws Exception {
         Random random = new Random();
-        ObjectMapper mapper = new ObjectMapper();
 
         // 1. Departments
         Department hr = departmentRepository.findByName("Phòng Nhân Sự")
@@ -99,22 +97,6 @@ public class DataInitializer {
 
         List<Employee> employees = employeeRepository.findAll();
 
-        // 3. FaceData
-        for (Employee e : employees) {
-            if (faceDataRepository.countByEmployee(e) == 0) {
-                float[] encodingArray = new float[128];
-                for (int i = 0; i < 128; i++) {
-                    encodingArray[i] = random.nextFloat();
-                }
-                String jsonEncoding = mapper.writeValueAsString(encodingArray);
-
-                FaceData face = FaceData.builder()
-                        .employee(e)
-                        .encoding(jsonEncoding)
-                        .build();
-                faceDataRepository.save(face);
-            }
-        }
 
         // 4. Attendance (5 ngày gần đây)
         for (Employee e : employees) {
